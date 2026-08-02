@@ -1,14 +1,12 @@
-# PROJECT_STATUS.md
-
 # PROJECT STATUS
 
 Project Name : MeasureVision
 
-Version : 0.1.2
+Version : 0.1.3
 
 Status : Development
 
-Last Update : Sprint 5 Completed
+Last Update : Sprint 6 Completed
 
 ---
 
@@ -17,16 +15,13 @@ Last Update : Sprint 5 Completed
 Status : 🟢 Healthy
 
 Milestone :
-
-Milestone 1 - Foundation & Camera
+Milestone 1 - Foundation & Camera Core
 
 Progress :
-
-█████░░░░░ 5 / 10 Module
+██████░░░░ 6 / 10 Module
 
 Overall Progress :
-
-█████░░░░░░░░░░░░░░░░░░░ 5 / 30 Sprint
+██████░░░░░░░░░░░░░░░░░░ 6 / 30 Sprint
 
 ---
 
@@ -41,6 +36,9 @@ v0.1.1
 v0.1.2
 - Camera Engine
 
+v0.1.3
+- Focus Manager
+
 ---
 
 # SPRINT PROGRESS
@@ -52,8 +50,8 @@ v0.1.2
 | Sprint 3 | SPA Router | ✅ DONE |
 | Sprint 4 | Permission Manager | ✅ DONE |
 | Sprint 5 | Camera Engine | ✅ DONE |
-| Sprint 6 | Focus Manager | 🟡 READY |
-| Sprint 7 | Zoom Manager | ⏳ TODO |
+| Sprint 6 | Focus Manager | ✅ DONE |
+| Sprint 7 | Zoom Manager | 🟡 READY |
 | Sprint 8 | Exposure Manager | ⏳ TODO |
 | Sprint 9 | Camera Overlay | ⏳ TODO |
 | Sprint 10 | Camera Optimization | ⏳ TODO |
@@ -72,13 +70,15 @@ v0.1.2
 
 ✅ Camera Engine
 
+✅ Focus Manager
+
 ---
 
 # CURRENT TARGET
 
-Sprint 6
+Sprint 7
 
-Focus Manager
+Zoom Manager
 
 ---
 
@@ -104,74 +104,73 @@ Focus Manager
 
 ↓
 
-Measurement Engine
-
----
-
-# NEXT MODULE
-
-Focus Manager
-
-↓
-
 Zoom Manager
 
 ↓
 
-Exposure Manager
+Measurement Engine
 
-↓
+---
 
-Camera Overlay
+# CAMERA CORE STATUS
 
-↓
+Project Structure      ✅
 
-Camera Optimization
+Permission Manager     ✅
+
+Camera Engine          ✅
+
+Focus Manager          ✅
+
+Zoom Manager           ⏳
+
+Exposure Manager       ⏳
+
+Overlay                ⏳
+
+Optimization           ⏳
 
 ---
 
 # BUG STATUS
 
-Critical Bug :
-
+Critical :
 None
 
-Major Bug :
-
+Major :
 None
 
-Minor Bug :
-
+Minor :
 None
 
 ---
 
 # KNOWN ISSUE
 
-None
+Tidak ada.
 
 ---
 
 # DEVELOPMENT RULE
 
-Do Not Modify
+Jangan mengubah:
 
 - Folder Structure
 - UI
-- SPA Router
+- Router
 - Permission Manager
 - Camera Engine
+- Focus Manager
 
-Unless absolutely necessary.
+kecuali memang diperlukan untuk integrasi Zoom Manager.
 
 ---
 
 # NEXT ACTION
 
-Sprint 6
+Sprint 7
 
-Focus Manager
+Zoom Manager
 
 Status :
-
 READY
