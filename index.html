@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>MeasureVision</title>
+<!-- Entry point aplikasi. Home adalah halaman default.
+     Redirect statis (bukan router SPA) ke home.html. -->
+<meta http-equiv="refresh" content="0; url=home.html">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <!-- Fallback jika meta-refresh diblokir oleh browser -->
+  <main style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:16px; text-align:center; padding:24px;">
+    <p class="eyebrow">MeasureVision</p>
+    <p style="color:var(--text-secondary); font-size:var(--fs-sm);">Memuat halaman Home…</p>
+    <a href="home.html" class="btn btn--primary" style="width:auto; padding:0 24px;">Buka Home</a>
+  </main>
+</body>
+</html>
