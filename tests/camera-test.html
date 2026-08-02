@@ -25,6 +25,11 @@
       <p class="screen__subtitle">Halaman ini hanya untuk pengujian modul, bukan bagian dari alur aplikasi. Wajib diakses via HTTPS (mis. GitHub Pages) agar getUserMedia berfungsi.</p>
     </div>
 
+    <div class="card card--pad" id="error-banner" style="display:none; margin-bottom: var(--sp-4); border-color: var(--danger);">
+      <p class="eyebrow" style="color: var(--danger); margin-bottom:6px;">Error Terdeteksi</p>
+      <p id="error-banner-text" class="mono" style="font-size: var(--fs-xs); color: var(--text-primary); white-space:pre-wrap; margin:0;"></p>
+    </div>
+
     <div class="viewfinder" id="preview-container" style="margin-bottom: var(--sp-4); display:flex; align-items:center; justify-content:center;">
       <p class="eyebrow" id="preview-placeholder">Preview belum aktif</p>
     </div>
@@ -52,16 +57,34 @@
   </main>
 </div>
 
-<script type="module">
-  // Import langsung dari facade cameraManager — satu pintu API
-  import {
-    openCamera,
-    closeCamera,
-    switchCamera,
-    onCameraStateChange,
-    getCameraState,
-  } from '../js/core/cameraManager.js';
+<script>
+  // Script biasa (bukan module) — dijamin selalu jalan meski module
+  // gagal dimuat, agar error apa pun tetap terlihat di layar tanpa
+  // perlu Safari Console/komputer.
+  function showFatalError(title, detail) {
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    if (banner && text) {
+      banner.style.display = 'block';
+      text.textContent += `${title}\n${detail}\n\n`;
+    }
+    const logEl = document.getElementById('log');
+    if (logEl) {
+      logEl.textContent += `[FATAL] ${title}: ${detail}\n`;
+    }
+  }
 
+  window.addEventListener('error', (event) => {
+    // Menangkap error resource (mis. file .js 404) & error sintaks/runtime
+    showFatalError('window.error', event.message || String(event.error) || 'Unknown error');
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    showFatalError('unhandledrejection', event.reason && event.reason.message ? event.reason.message : String(event.reason));
+  });
+</script>
+
+<script type="module">
   const container = document.getElementById('preview-container');
   const placeholder = document.getElementById('preview-placeholder');
   const statusEl = document.getElementById('camera-status');
@@ -72,6 +95,39 @@
   function log(message) {
     const time = new Date().toLocaleTimeString('id-ID');
     logEl.textContent += `[${time}] ${message}\n`;
+  }
+
+  log('Memuat module cameraManager.js...');
+
+  let cameraManager;
+  try {
+    // Dynamic import supaya kegagalan (404 / syntax error / error di
+    // dependency manapun) bisa ditangkap & ditampilkan di layar,
+    // bukan hanya diam di console.
+    cameraManager = await import('../js/core/cameraManager.js');
+    log('Module berhasil dimuat.');
+  } catch (err) {
+    showFatalErrorFallback('Gagal memuat cameraManager.js', err);
+    throw err;
+  }
+
+  const {
+    openCamera,
+    closeCamera,
+    switchCamera,
+    onCameraStateChange,
+    getCameraState,
+  } = cameraManager;
+
+  function showFatalErrorFallback(title, err) {
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    const detail = (err && err.message) ? err.message : String(err);
+    if (banner && text) {
+      banner.style.display = 'block';
+      text.textContent += `${title}\n${detail}\n\nPeriksa: nama file/folder harus PERSIS sama besar-kecil huruf (case-sensitive) di GitHub, dan path relatif "../js/core/cameraManager.js" harus valid dari lokasi file ini.\n\n`;
+    }
+    log(`[FATAL] ${title}: ${detail}`);
   }
 
   const BADGE_CLASS = {
@@ -105,24 +161,36 @@
 
   document.getElementById('btn-open').addEventListener('click', async () => {
     log('Membuka kamera...');
-    const result = await openCamera(container);
-    if (!result.success) {
-      log(`Gagal: [${result.error.code}] ${result.error.message}`);
+    try {
+      const result = await openCamera(container);
+      if (!result.success) {
+        log(`Gagal: [${result.error.code}] ${result.error.message}`);
+      }
+    } catch (err) {
+      showFatalErrorFallback('Error saat openCamera()', err);
     }
   });
 
   document.getElementById('btn-close').addEventListener('click', () => {
     log('Menutup kamera...');
-    closeCamera();
-    placeholder.textContent = 'Preview belum aktif';
-    placeholder.style.display = 'block';
+    try {
+      closeCamera();
+      placeholder.textContent = 'Preview belum aktif';
+      placeholder.style.display = 'block';
+    } catch (err) {
+      showFatalErrorFallback('Error saat closeCamera()', err);
+    }
   });
 
   document.getElementById('btn-switch').addEventListener('click', async () => {
     log('Mengganti kamera depan/belakang...');
-    const result = await switchCamera(container);
-    if (!result.success) {
-      log(`Gagal switch: [${result.error.code}] ${result.error.message}`);
+    try {
+      const result = await switchCamera(container);
+      if (!result.success) {
+        log(`Gagal switch: [${result.error.code}] ${result.error.message}`);
+      }
+    } catch (err) {
+      showFatalErrorFallback('Error saat switchCamera()', err);
     }
   });
 </script>
