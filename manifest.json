@@ -1,0 +1,13 @@
+{
+  "_comment": "manifest.json - Web App Manifest untuk PWA Pengukur Dimensi. Sprint 1: hanya metadata dasar, ikon dan branding final menyusul.",
+  "name": "Pengukur Dimensi Benda Kecil",
+  "short_name": "Pengukur",
+  "description": "PWA untuk mengukur dimensi benda kecil menggunakan kamera iPhone.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": []
+}
