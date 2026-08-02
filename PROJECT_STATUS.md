@@ -1,142 +1,95 @@
-# PROJECT_STATUS.md
-
 # PROJECT STATUS
 
-Project Name:
+Project:
 MeasureVision
 
 Version:
-0.0.4
+0.1.0
 
 Status:
 Development
 
-Last Update:
-Sprint 3 Completed
+==============================================
 
----
+MILESTONE 1
 
-# Sprint Progress
+Foundation
 
-| Sprint | Nama | Status |
-|---------|------|--------|
-| Sprint 1 | Project Structure | ✅ DONE |
-| Sprint 2 | User Interface | ✅ DONE |
-| Sprint 3 | Navigation & SPA Router | ✅ DONE |
-| Sprint 4 | Permission Manager | 🟡 READY |
-| Sprint 5 | Camera Preview | ⏳ TODO |
-| Sprint 6 | Focus Manager | ⏳ TODO |
-| Sprint 7 | Zoom Manager | ⏳ TODO |
-| Sprint 8 | Exposure Manager | ⏳ TODO |
-| Sprint 9 | Database (IndexedDB) | ⏳ TODO |
-| Sprint 10 | Calibration Engine | ⏳ TODO |
-| Sprint 11 | Geometry Engine | ⏳ TODO |
-| Sprint 12 | OpenCV Loader | ⏳ TODO |
+==============================================
 
----
+✅ Sprint 1
+Project Structure
 
-# Module Status
+Status:
+DONE
 
-## Foundation
+----------------------------------------------
 
-✅ Project Structure
+✅ Sprint 2
+User Interface
 
-✅ UI
+Status:
+DONE
 
-✅ Navigation
+----------------------------------------------
 
----
+✅ Sprint 3
+SPA Router
 
-## Camera
+Status:
+DONE
 
-⏳ Permission Manager
+----------------------------------------------
 
-⏳ Camera Engine
+🟡 Sprint 4
+Permission Manager
 
-⏳ Focus Manager
+Status:
+READY
 
-⏳ Zoom Manager
+----------------------------------------------
 
-⏳ Exposure Manager
+Sprint 5
+Camera Preview
 
----
+TODO
 
-## Measurement
+Sprint 6
+Focus Manager
 
-⏳ Calibration
+TODO
 
-⏳ Geometry
+Sprint 7
+Zoom Manager
 
-⏳ Measurement
+TODO
 
----
+Sprint 8
+Exposure Manager
 
-## Computer Vision
+TODO
 
-⏳ OpenCV
+Sprint 9
+Grid & Overlay
 
-⏳ Image Processing
+TODO
 
-⏳ Edge Detection
+Sprint 10
+Camera Optimization
 
-⏳ Contour Detection
+TODO
 
-⏳ Marker Detection
+==============================================
 
-⏳ Perspective Correction
-
----
-
-## Storage
-
-⏳ IndexedDB
-
-⏳ Project Manager
-
-⏳ History
-
----
-
-## Export
-
-⏳ PNG
-
-⏳ PDF
-
-⏳ CSV
-
----
-
-## PWA
-
-⏳ Offline
-
-⏳ Cache
-
-⏳ Install
-
----
-
-# Current Sprint
+NEXT TARGET
 
 Sprint 4
 
-Module:
 Permission Manager
 
-Target:
+==============================================
 
-- Camera Permission
-- Motion Permission
-- Storage Permission (bila diperlukan browser)
-- Permission Status Checker
-- Permission Request
-- Permission Recheck
-- Error Handling
-
----
-
-# Current Architecture
+Current Architecture
 
 index.html
 
@@ -146,12 +99,6 @@ SPA Router
 
 ↓
 
-UI Module
-
-↓
-
-(Next)
-
 Permission Manager
 
 ↓
@@ -160,38 +107,24 @@ Camera Engine
 
 ↓
 
-Calibration
-
-↓
-
 Measurement
 
----
+==============================================
 
-# Known Issues
+Bug
 
-Tidak ada bug kritis.
+Tidak ada.
 
----
+==============================================
 
-# Development Rules
+Known Issue
 
-- Jangan mengubah struktur folder.
-- Jangan mengubah UI.
-- Jangan mengubah Router.
-- Jangan mengubah modul lain.
-- Kerjakan hanya Permission Manager.
-- Semua module menggunakan ES Module.
-- Semua fungsi diberi komentar.
-- Semua error ditangani dengan baik.
+Tidak ada.
 
----
+==============================================
 
-# Next Sprint
+DO NOT MODIFY
 
-Sprint 4
-
-Permission Manager
-
-Status:
-READY
+- Folder Structure
+- UI
+- Router
