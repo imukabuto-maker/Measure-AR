@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>Test — Permission Manager</title>
+<!-- Halaman uji manual khusus Sprint 4. Berdiri sendiri, TIDAK
+     terhubung ke router/navigasi utama, dan tidak mengubah UI
+     halaman lain. Memakai token & komponen CSS yang sudah ada. -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand"><span class="dot"></span>Test: Permission Manager</div>
+  </header>
+
+  <main class="screen">
+    <div class="screen__header">
+      <p class="eyebrow">Sprint 4 — QA Manual</p>
+      <h1 class="screen__title">Permission Manager</h1>
+      <p class="screen__subtitle">Halaman ini hanya untuk pengujian modul, bukan bagian dari alur aplikasi.</p>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Kamera</p>
+          <p class="toggle-row__hint" id="camera-status">Status: unknown</p>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top: var(--sp-3);">
+        <button class="btn btn--secondary" id="btn-check-camera">Check</button>
+        <button class="btn btn--primary" id="btn-request-camera">Request</button>
+      </div>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Motion</p>
+          <p class="toggle-row__hint" id="motion-status">Status: unknown</p>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top: var(--sp-3);">
+        <button class="btn btn--secondary" id="btn-check-motion">Check</button>
+        <button class="btn btn--primary" id="btn-request-motion">Request</button>
+      </div>
+    </div>
+
+    <div class="card card--pad">
+      <p class="eyebrow" style="margin-bottom:6px;">Log</p>
+      <pre id="log" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;"></pre>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  // Import langsung dari facade permissionManager — satu pintu API
+  import {
+    checkAllPermissions,
+    requestCamera,
+    requestMotion,
+    onPermissionChange,
+  } from '../js/core/permissionManager.js';
+
+  const cameraStatusEl = document.getElementById('camera-status');
+  const motionStatusEl = document.getElementById('motion-status');
+  const logEl = document.getElementById('log');
+
+  /** Tulis baris baru ke log tampilan (untuk observasi manual di iPhone). */
+  function log(message) {
+    const time = new Date().toLocaleTimeString('id-ID');
+    logEl.textContent += `[${time}] ${message}\n`;
+  }
+
+  // Perbarui tampilan status otomatis setiap kali state berubah
+  onPermissionChange('camera', (value) => {
+    cameraStatusEl.textContent = `Status: ${value}`;
+    log(`camera → ${value}`);
+  });
+  onPermissionChange('motion', (value) => {
+    motionStatusEl.textContent = `Status: ${value}`;
+    log(`motion → ${value}`);
+  });
+
+  document.getElementById('btn-check-camera').addEventListener('click', async () => {
+    log('Memeriksa izin kamera...');
+    const { camera } = await checkAllPermissions();
+    cameraStatusEl.textContent = `Status: ${camera}`;
+  });
+
+  document.getElementById('btn-request-camera').addEventListener('click', async () => {
+    log('Meminta izin kamera...');
+    const status = await requestCamera();
+    log(`Hasil request kamera: ${status}`);
+  });
+
+  document.getElementById('btn-check-motion').addEventListener('click', async () => {
+    log('Memeriksa izin motion...');
+    const { motion } = await checkAllPermissions();
+    motionStatusEl.textContent = `Status: ${motion}`;
+  });
+
+  document.getElementById('btn-request-motion').addEventListener('click', async () => {
+    log('Meminta izin motion...');
+    const status = await requestMotion();
+    log(`Hasil request motion: ${status}`);
+  });
+</script>
+</body>
+</html>
