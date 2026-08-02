@@ -2,17 +2,13 @@
 
 # PROJECT STATUS
 
-Project Name:
-MeasureVision
+Project Name : MeasureVision
 
-Version:
-0.1.1
+Version : 0.1.2
 
-Status:
-Development
+Status : Development
 
-Last Update:
-Sprint 4 Completed
+Last Update : Sprint 5 Completed
 
 ---
 
@@ -20,11 +16,30 @@ Sprint 4 Completed
 
 Status : 🟢 Healthy
 
-Current Milestone :
+Milestone :
+
 Milestone 1 - Foundation & Camera
 
 Progress :
-4 / 30 Sprint Completed
+
+█████░░░░░ 5 / 10 Module
+
+Overall Progress :
+
+█████░░░░░░░░░░░░░░░░░░░ 5 / 30 Sprint
+
+---
+
+# VERSION HISTORY
+
+v0.1.0
+- Foundation
+
+v0.1.1
+- Permission Manager
+
+v0.1.2
+- Camera Engine
 
 ---
 
@@ -36,12 +51,34 @@ Progress :
 | Sprint 2 | User Interface | ✅ DONE |
 | Sprint 3 | SPA Router | ✅ DONE |
 | Sprint 4 | Permission Manager | ✅ DONE |
-| Sprint 5 | Camera Preview | 🟡 READY |
-| Sprint 6 | Focus Manager | ⏳ TODO |
+| Sprint 5 | Camera Engine | ✅ DONE |
+| Sprint 6 | Focus Manager | 🟡 READY |
 | Sprint 7 | Zoom Manager | ⏳ TODO |
 | Sprint 8 | Exposure Manager | ⏳ TODO |
 | Sprint 9 | Camera Overlay | ⏳ TODO |
 | Sprint 10 | Camera Optimization | ⏳ TODO |
+
+---
+
+# COMPLETED MODULE
+
+✅ Project Structure
+
+✅ User Interface
+
+✅ SPA Router
+
+✅ Permission Manager
+
+✅ Camera Engine
+
+---
+
+# CURRENT TARGET
+
+Sprint 6
+
+Focus Manager
 
 ---
 
@@ -63,35 +100,15 @@ Camera Engine
 
 ↓
 
+Focus Manager
+
+↓
+
 Measurement Engine
 
 ---
 
-# COMPLETED MODULE
-
-✅ Project Structure
-
-✅ User Interface
-
-✅ SPA Router
-
-✅ Permission Manager
-
----
-
-# CURRENT TARGET
-
-Sprint 5
-
-Camera Preview
-
----
-
-# UPCOMING MODULE
-
-Camera Preview
-
-↓
+# NEXT MODULE
 
 Focus Manager
 
@@ -115,7 +132,17 @@ Camera Optimization
 
 # BUG STATUS
 
-No Critical Bug
+Critical Bug :
+
+None
+
+Major Bug :
+
+None
+
+Minor Bug :
+
+None
 
 ---
 
@@ -133,14 +160,18 @@ Do Not Modify
 - UI
 - SPA Router
 - Permission Manager
+- Camera Engine
 
-Unless explicitly required.
+Unless absolutely necessary.
 
 ---
 
 # NEXT ACTION
 
-Continue to Sprint 5
+Sprint 6
 
-Target:
-Camera Preview
+Focus Manager
+
+Status :
+
+READY
