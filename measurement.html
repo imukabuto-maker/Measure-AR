@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>MeasureVision — Measurement</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <a class="icon-btn" href="camera.html" aria-label="Kembali">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>
+    </a>
+    <div class="topbar__brand"><span class="dot"></span>Measurement</div>
+    <span class="badge badge--ok">Kalibrasi OK</span>
+  </header>
+
+  <main class="screen" style="padding-top: var(--sp-4);">
+
+    <div class="viewfinder" style="margin-bottom: 0;">
+      <div class="viewfinder__grid"></div>
+      <div class="viewfinder__object" style="top:32%; left:26%; width:48%; height:30%;"></div>
+    </div>
+
+    <div class="readout">
+      <span class="readout__number">18.42</span>
+      <span class="readout__unit">mm</span>
+    </div>
+
+    <div style="display:flex; justify-content:center; gap: var(--sp-6); margin-bottom: var(--sp-6);">
+      <div style="text-align:center;">
+        <p class="eyebrow">Lebar</p>
+        <p class="mono" style="color: var(--text-primary); font-size: var(--fs-base);">18.42 mm</p>
+      </div>
+      <div style="text-align:center;">
+        <p class="eyebrow">Tinggi</p>
+        <p class="mono" style="color: var(--text-primary); font-size: var(--fs-base);">9.87 mm</p>
+      </div>
+      <div style="text-align:center;">
+        <p class="eyebrow">Akurasi</p>
+        <p class="mono" style="color: var(--ok); font-size: var(--fs-base);">±0.05 mm</p>
+      </div>
+    </div>
+
+    <div class="segmented" role="tablist" aria-label="Tipe pengukuran" style="margin-bottom: var(--sp-6);">
+      <div class="segmented__opt" role="tab" aria-selected="true">Linear</div>
+      <div class="segmented__opt" role="tab" aria-selected="false">Area</div>
+      <div class="segmented__opt" role="tab" aria-selected="false">Sudut</div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--secondary">Ukur Ulang</button>
+      <button class="btn btn--primary">Simpan ke History</button>
+    </div>
+    <button class="btn btn--ghost">Ekspor Hasil</button>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Primary">
+    <a class="bottom-nav__item" href="home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5a1 1 0 0 0 1 1h3.5v-6h5v6H18a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+    </a>
+    <a class="bottom-nav__item" href="camera.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1-2h7l1 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.25"/></svg>
+      <span>Camera</span>
+    </a>
+    <a class="bottom-nav__item" href="calibration.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      <span>Calib.</span>
+    </a>
+    <a class="bottom-nav__item" href="measurement.html" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="7" rx="1"/><path d="M7 8.5v3M11 8.5v3M15 8.5v3M19 8.5v3"/></svg>
+      <span>Measure</span>
+    </a>
+    <a class="bottom-nav__item" href="history.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+      <span>History</span>
+    </a>
+  </nav>
+
+</div>
+</body>
+</html>

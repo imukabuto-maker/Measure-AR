@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>MeasureVision — Setting</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <a class="icon-btn" href="home.html" aria-label="Kembali">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>
+    </a>
+    <div class="topbar__brand"><span class="dot"></span>Setting</div>
+    <div style="width:36px;"></div>
+  </header>
+
+  <main class="screen">
+
+    <div class="tick-divider--labeled" style="margin-top:0;">
+      <span>Tampilan</span><div class="rule"></div>
+    </div>
+    <div class="card card--pad" style="margin-bottom: var(--sp-6);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Dark Mode</p>
+          <p class="toggle-row__hint">Ikuti pengaturan sistem</p>
+        </div>
+        <div class="switch" role="switch" aria-checked="true"></div>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Grid Overlay</p>
+          <p class="toggle-row__hint">Tampilkan grid pada viewfinder</p>
+        </div>
+        <div class="switch" role="switch" aria-checked="true"></div>
+      </div>
+    </div>
+
+    <div class="tick-divider--labeled">
+      <span>Pengukuran</span><div class="rule"></div>
+    </div>
+    <div class="card card--pad" style="margin-bottom: var(--sp-6);">
+      <div class="field" style="margin-bottom: var(--sp-2);">
+        <label class="field__label" for="unit">Satuan default</label>
+        <select class="select" id="unit">
+          <option>Milimeter (mm)</option>
+          <option>Sentimeter (cm)</option>
+          <option>Inci (in)</option>
+        </select>
+      </div>
+      <div class="toggle-row" style="border-top: 1px solid var(--line); padding-top: var(--sp-4);">
+        <div>
+          <p class="toggle-row__label">Perspective Correction</p>
+          <p class="toggle-row__hint">Otomatis koreksi sudut kamera</p>
+        </div>
+        <div class="switch" role="switch" aria-checked="true"></div>
+      </div>
+    </div>
+
+    <div class="tick-divider--labeled">
+      <span>Penyimpanan</span><div class="rule"></div>
+    </div>
+    <div class="card card--pad" style="margin-bottom: var(--sp-6);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Mode Offline</p>
+          <p class="toggle-row__hint">Simpan semua data secara lokal (IndexedDB)</p>
+        </div>
+        <div class="switch" role="switch" aria-checked="true"></div>
+      </div>
+      <div class="toggle-row" style="align-items:center;">
+        <div>
+          <p class="toggle-row__label">Data tersimpan</p>
+          <p class="toggle-row__hint">3 pengukuran · 1 project</p>
+        </div>
+        <span class="mono" style="font-size: var(--fs-xs); color: var(--text-tertiary);">0.2 MB</span>
+      </div>
+    </div>
+
+    <div class="tick-divider--labeled">
+      <span>Tentang</span><div class="rule"></div>
+    </div>
+    <div class="card card--pad" style="margin-bottom: var(--sp-6);">
+      <div class="toggle-row" style="align-items:center;">
+        <p class="toggle-row__label">Versi</p>
+        <span class="mono badge badge--neutral">v0.1.0</span>
+      </div>
+    </div>
+
+    <button class="btn btn--danger-outline">Hapus Semua Data</button>
+  </main>
+
+</div>
+</body>
+</html>
