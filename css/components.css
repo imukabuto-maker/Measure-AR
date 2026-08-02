@@ -31,7 +31,7 @@
 }
 .topbar__actions { display: flex; align-items: center; gap: var(--sp-1); }
 .icon-btn {
-  width: 36px; height: 36px;
+  width: 40px; height: 40px;
   display: grid; place-items: center;
   background: transparent;
   border: 1px solid transparent;
@@ -40,7 +40,7 @@
   transition: background var(--dur-fast) var(--ease-standard), border-color var(--dur-fast);
 }
 .icon-btn:hover { background: var(--bg-panel-raised); border-color: var(--line); }
-.icon-btn svg { width: 18px; height: 18px; stroke: var(--text-secondary); }
+.icon-btn svg { width: 22px; height: 22px; stroke: var(--text-secondary); flex-shrink: 0; }
 .icon-btn:hover svg { stroke: var(--text-primary); }
 
 /* ---------- Signature element: vernier tick divider ----------
@@ -124,7 +124,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
 }
-.nav-card__icon svg { width: 20px; height: 20px; stroke: var(--accent); }
+.nav-card__icon svg { width: 24px; height: 24px; stroke: var(--accent); flex-shrink: 0; }
 .nav-card__body { flex: 1; min-width: 0; }
 .nav-card__title { font-size: var(--fs-base); font-weight: 600; }
 .nav-card__meta {
@@ -352,7 +352,7 @@
   color: var(--text-tertiary);
   position: relative;
 }
-.bottom-nav__item svg { width: 20px; height: 20px; stroke: currentColor; }
+.bottom-nav__item svg { width: 24px; height: 24px; stroke: currentColor; flex-shrink: 0; }
 .bottom-nav__item span {
   font-family: var(--font-mono);
   font-size: 9px;
