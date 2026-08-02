@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>Test — Camera Engine</title>
+<!-- Halaman uji manual khusus Sprint 5. Berdiri sendiri, TIDAK
+     terhubung ke router/navigasi utama, dan tidak mengubah UI
+     halaman lain. Memakai token & komponen CSS yang sudah ada. -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand"><span class="dot"></span>Test: Camera Engine</div>
+  </header>
+
+  <main class="screen">
+    <div class="screen__header">
+      <p class="eyebrow">Sprint 5 — QA Manual</p>
+      <h1 class="screen__title">Camera Engine</h1>
+      <p class="screen__subtitle">Halaman ini hanya untuk pengujian modul, bukan bagian dari alur aplikasi. Wajib diakses via HTTPS (mis. GitHub Pages) agar getUserMedia berfungsi.</p>
+    </div>
+
+    <div class="viewfinder" id="preview-container" style="margin-bottom: var(--sp-4); display:flex; align-items:center; justify-content:center;">
+      <p class="eyebrow" id="preview-placeholder">Preview belum aktif</p>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Status Kamera</p>
+          <p class="toggle-row__hint" id="camera-status">idle</p>
+        </div>
+        <span class="badge badge--neutral" id="camera-badge">IDLE</span>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--primary" id="btn-open">Open Camera</button>
+      <button class="btn btn--secondary" id="btn-close">Close Camera</button>
+    </div>
+    <button class="btn btn--ghost" id="btn-switch" style="margin-bottom: var(--sp-5);">Switch Front/Rear</button>
+
+    <div class="card card--pad">
+      <p class="eyebrow" style="margin-bottom:6px;">Log</p>
+      <pre id="log" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;"></pre>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  // Import langsung dari facade cameraManager — satu pintu API
+  import {
+    openCamera,
+    closeCamera,
+    switchCamera,
+    onCameraStateChange,
+    getCameraState,
+  } from '../js/core/cameraManager.js';
+
+  const container = document.getElementById('preview-container');
+  const placeholder = document.getElementById('preview-placeholder');
+  const statusEl = document.getElementById('camera-status');
+  const badgeEl = document.getElementById('camera-badge');
+  const logEl = document.getElementById('log');
+
+  /** Tulis baris baru ke log tampilan (untuk observasi manual di iPhone). */
+  function log(message) {
+    const time = new Date().toLocaleTimeString('id-ID');
+    logEl.textContent += `[${time}] ${message}\n`;
+  }
+
+  const BADGE_CLASS = {
+    idle: 'badge--neutral',
+    opening: 'badge--warn',
+    previewing: 'badge--ok',
+    closed: 'badge--neutral',
+    error: 'badge--danger',
+  };
+
+  // Render otomatis setiap kali state kamera berubah
+  onCameraStateChange((state) => {
+    statusEl.textContent = state.errorMessage
+      ? `${state.status} — ${state.errorMessage}`
+      : `${state.status} (facing: ${state.facingMode})`;
+
+    badgeEl.textContent = state.status.toUpperCase();
+    badgeEl.className = 'badge ' + (BADGE_CLASS[state.status] || 'badge--neutral');
+
+    placeholder.style.display = state.status === 'previewing' ? 'none' : 'block';
+    if (state.status !== 'previewing') {
+      placeholder.textContent = state.status === 'opening' ? 'Membuka kamera...' : 'Preview belum aktif';
+    }
+
+    log(`state → ${state.status}${state.errorMessage ? ' (' + state.errorMessage + ')' : ''}`);
+  });
+
+  // Set tampilan awal sesuai state saat ini
+  const initial = getCameraState();
+  statusEl.textContent = `${initial.status} (facing: ${initial.facingMode})`;
+
+  document.getElementById('btn-open').addEventListener('click', async () => {
+    log('Membuka kamera...');
+    const result = await openCamera(container);
+    if (!result.success) {
+      log(`Gagal: [${result.error.code}] ${result.error.message}`);
+    }
+  });
+
+  document.getElementById('btn-close').addEventListener('click', () => {
+    log('Menutup kamera...');
+    closeCamera();
+    placeholder.textContent = 'Preview belum aktif';
+    placeholder.style.display = 'block';
+  });
+
+  document.getElementById('btn-switch').addEventListener('click', async () => {
+    log('Mengganti kamera depan/belakang...');
+    const result = await switchCamera(container);
+    if (!result.success) {
+      log(`Gagal switch: [${result.error.code}] ${result.error.message}`);
+    }
+  });
+</script>
+</body>
+</html>
