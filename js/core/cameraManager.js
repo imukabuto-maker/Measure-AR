@@ -131,3 +131,27 @@ function stopActiveStream() {
     activeStream = null;
   }
 }
+
+/**
+ * [Sprint 6 — integrasi Focus Manager]
+ * Ambil video track yang sedang aktif, agar modul lain (Focus Manager)
+ * bisa membaca capability & menerapkan constraint fokus TANPA membuka
+ * stream sendiri atau menduplikasi logika Camera Engine.
+ * @returns {MediaStreamTrack|null}
+ */
+export function getActiveVideoTrack() {
+  if (!activeStream) return null;
+  const tracks = activeStream.getVideoTracks();
+  return tracks.length > 0 ? tracks[0] : null;
+}
+
+/**
+ * [Sprint 6 — integrasi Focus Manager]
+ * Ambil elemen <video> preview yang sedang aktif, agar modul lain bisa
+ * memasang listener (mis. tap-to-focus) tanpa membuat elemen preview
+ * baru atau menduplikasi logika Camera Engine.
+ * @returns {HTMLVideoElement|null}
+ */
+export function getPreviewElement() {
+  return previewEl;
+}
