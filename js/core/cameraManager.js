@@ -40,14 +40,16 @@ let previewEl = null;
  * Buka kamera & tampilkan preview di dalam container yang diberikan.
  * Alur:
  * 1) Cek/lengkapi izin kamera lewat Permission Manager (Sprint 4).
- * 2) Minta MediaStream sesuai facingMode yang diminta.
+ * 2) Minta MediaStream sesuai facingMode (dan resolusi jika diminta).
  * 3) Buat elemen <video>, pasang stream, mount ke container.
  * @param {HTMLElement} container elemen tempat preview akan dipasang
  * @param {Object} [options]
  * @param {'environment'|'user'} [options.facingMode] default 'environment' (kamera belakang)
+ * @param {number} [options.width] [Sprint 10 — integrasi Resolution Manager] lebar ideal (px), opsional
+ * @param {number} [options.height] [Sprint 10 — integrasi Resolution Manager] tinggi ideal (px), opsional
  * @returns {Promise<{success:boolean, error?:{code:string,message:string}}>}
  */
-export async function openCamera(container, { facingMode = 'environment' } = {}) {
+export async function openCamera(container, { facingMode = 'environment', width, height } = {}) {
   if (!container) {
     throw new Error('[cameraManager] Parameter container wajib diisi');
   }
@@ -78,8 +80,15 @@ export async function openCamera(container, { facingMode = 'environment' } = {})
       closeCamera();
     }
 
+    // [Sprint 10] width/height bersifat opsional — jika tidak diisi,
+    // constraint video persis sama seperti sebelum Sprint 10 (tidak
+    // ada perubahan perilaku untuk pemanggil yang sudah ada).
+    const videoConstraints = { facingMode: { ideal: facingMode } };
+    if (width) videoConstraints.width = { ideal: width };
+    if (height) videoConstraints.height = { ideal: height };
+
     activeStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: facingMode } },
+      video: videoConstraints,
       audio: false,
     });
 
@@ -154,4 +163,16 @@ export function getActiveVideoTrack() {
  */
 export function getPreviewElement() {
   return previewEl;
+}
+
+/**
+ * [Sprint 10 — integrasi Camera Lifecycle Manager]
+ * Ambil MediaStream yang sedang aktif, agar Lifecycle/Session Manager
+ * bisa memantau event 'inactive'/track 'ended' (indikasi iOS Safari
+ * menghentikan stream secara diam-diam di background) tanpa membuka
+ * stream sendiri atau menduplikasi logika Camera Engine.
+ * @returns {MediaStream|null}
+ */
+export function getActiveStream() {
+  return activeStream;
 }
