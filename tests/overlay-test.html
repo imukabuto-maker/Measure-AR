@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>Test — Overlay Framework</title>
+<!-- Halaman uji manual khusus Sprint 9. Berdiri sendiri, TIDAK
+     terhubung ke router/navigasi utama, dan tidak mengubah UI
+     halaman lain. Memakai token & komponen CSS yang sudah ada. -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand"><span class="dot"></span>Test: Overlay Framework</div>
+  </header>
+
+  <main class="screen">
+    <div class="screen__header">
+      <p class="eyebrow">Sprint 9 — QA Manual</p>
+      <h1 class="screen__title">Overlay Framework</h1>
+      <p class="screen__subtitle">Buka kamera, nyalakan layer, lalu putar iPhone ke landscape untuk uji resize. Wajib HTTPS (GitHub Pages).</p>
+    </div>
+
+    <div class="card card--pad" id="error-banner" style="display:none; margin-bottom: var(--sp-4); border-color: var(--danger);">
+      <p class="eyebrow" style="color: var(--danger); margin-bottom:6px;">Error Terdeteksi</p>
+      <p id="error-banner-text" class="mono" style="font-size: var(--fs-xs); color: var(--text-primary); white-space:pre-wrap; margin:0;"></p>
+    </div>
+
+    <div class="viewfinder" id="preview-container" style="margin-bottom: var(--sp-4); display:flex; align-items:center; justify-content:center;">
+      <p class="eyebrow" id="preview-placeholder">Preview belum aktif</p>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Status Kamera</p>
+          <p class="toggle-row__hint" id="camera-status">idle</p>
+        </div>
+        <span class="badge badge--neutral" id="camera-badge">IDLE</span>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Status Overlay</p>
+          <p class="toggle-row__hint" id="overlay-status">idle (0×0)</p>
+        </div>
+        <span class="badge badge--neutral" id="overlay-badge">IDLE</span>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-4);">
+      <button class="btn btn--primary" id="btn-open">Open Camera</button>
+      <button class="btn btn--secondary" id="btn-close">Close Camera</button>
+    </div>
+
+    <p class="eyebrow" style="margin-bottom: var(--sp-2);">Layer</p>
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--secondary" id="btn-crosshair">Crosshair</button>
+      <button class="btn btn--secondary" id="btn-grid">Grid 1/3</button>
+    </div>
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--secondary" id="btn-safearea">Safe Area</button>
+      <button class="btn btn--secondary" id="btn-roi">ROI Demo</button>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="opacity-slider">Opacity Crosshair</label>
+      <input type="range" id="opacity-slider" min="0" max="1" step="0.05" value="0.9" style="width:100%; accent-color: var(--accent); height:40px;">
+    </div>
+
+    <div class="card card--pad" style="margin-top: var(--sp-3);">
+      <p class="eyebrow" style="margin-bottom:6px;">Log</p>
+      <pre id="log" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;"></pre>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Script biasa (bukan module) — selalu jalan meski module gagal
+  // dimuat, agar error apa pun tetap terlihat di layar tanpa
+  // perlu Safari Console/komputer.
+  function showFatalError(title, detail) {
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    if (banner && text) {
+      banner.style.display = 'block';
+      text.textContent += `${title}\n${detail}\n\n`;
+    }
+    const logEl = document.getElementById('log');
+    if (logEl) logEl.textContent += `[FATAL] ${title}: ${detail}\n`;
+  }
+  window.addEventListener('error', (event) => {
+    showFatalError('window.error', event.message || String(event.error) || 'Unknown error');
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    showFatalError('unhandledrejection', event.reason && event.reason.message ? event.reason.message : String(event.reason));
+  });
+</script>
+
+<script type="module">
+  const container = document.getElementById('preview-container');
+  const placeholder = document.getElementById('preview-placeholder');
+  const cameraStatusEl = document.getElementById('camera-status');
+  const cameraBadgeEl = document.getElementById('camera-badge');
+  const overlayStatusEl = document.getElementById('overlay-status');
+  const overlayBadgeEl = document.getElementById('overlay-badge');
+  const logEl = document.getElementById('log');
+
+  function log(message) {
+    const time = new Date().toLocaleTimeString('id-ID');
+    logEl.textContent += `[${time}] ${message}\n`;
+  }
+
+  function fatal(title, err) {
+    const detail = (err && err.message) ? err.message : String(err);
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    banner.style.display = 'block';
+    text.textContent += `${title}\n${detail}\n\n`;
+    log(`[FATAL] ${title}: ${detail}`);
+  }
+
+  log('Memuat module cameraManager.js & overlayManager.js...');
+
+  let cameraManager, overlayManager;
+  try {
+    [cameraManager, overlayManager] = await Promise.all([
+      import('../js/core/cameraManager.js'),
+      import('../js/core/overlayManager.js'),
+    ]);
+    log('Module berhasil dimuat.');
+  } catch (err) {
+    fatal('Gagal memuat module', err);
+    throw err;
+  }
+
+  const { openCamera, closeCamera, onCameraStateChange, getCameraState } = cameraManager;
+  const {
+    setLayerVisible, setLayerOpacity, setROI,
+    onOverlayStateChange, getOverlayState, OVERLAY_LAYERS,
+  } = overlayManager;
+
+  const CAMERA_BADGE_CLASS = {
+    idle: 'badge--neutral', opening: 'badge--warn', previewing: 'badge--ok',
+    closed: 'badge--neutral', error: 'badge--danger',
+  };
+  const OVERLAY_BADGE_CLASS = {
+    idle: 'badge--neutral', active: 'badge--ok', error: 'badge--danger',
+  };
+
+  onCameraStateChange((state) => {
+    cameraStatusEl.textContent = state.errorMessage
+      ? `${state.status} — ${state.errorMessage}`
+      : `${state.status} (facing: ${state.facingMode})`;
+    cameraBadgeEl.textContent = state.status.toUpperCase();
+    cameraBadgeEl.className = 'badge ' + (CAMERA_BADGE_CLASS[state.status] || 'badge--neutral');
+
+    placeholder.style.display = state.status === 'previewing' ? 'none' : 'block';
+    if (state.status !== 'previewing') {
+      placeholder.textContent = state.status === 'opening' ? 'Membuka kamera...' : 'Preview belum aktif';
+    }
+    log(`camera state → ${state.status}${state.errorMessage ? ' (' + state.errorMessage + ')' : ''}`);
+  });
+
+  onOverlayStateChange((state) => {
+    overlayStatusEl.textContent = state.errorMessage
+      ? `${state.status} — ${state.errorMessage}`
+      : `${state.status} (${Math.round(state.size.width)}×${Math.round(state.size.height)})`;
+    overlayBadgeEl.textContent = state.status.toUpperCase();
+    overlayBadgeEl.className = 'badge ' + (OVERLAY_BADGE_CLASS[state.status] || 'badge--neutral');
+    log(`overlay state → ${state.status} size=${Math.round(state.size.width)}x${Math.round(state.size.height)}`);
+  });
+
+  const initialCamera = getCameraState();
+  cameraStatusEl.textContent = `${initialCamera.status} (facing: ${initialCamera.facingMode})`;
+  const initialOverlay = getOverlayState();
+  overlayStatusEl.textContent = `${initialOverlay.status} (0×0)`;
+
+  document.getElementById('btn-open').addEventListener('click', async () => {
+    log('Membuka kamera... (overlay otomatis terpasang setelah preview tampil)');
+    try {
+      const result = await openCamera(container);
+      if (!result.success) log(`Gagal: [${result.error.code}] ${result.error.message}`);
+    } catch (err) {
+      fatal('Error saat openCamera()', err);
+    }
+  });
+
+  document.getElementById('btn-close').addEventListener('click', () => {
+    log('Menutup kamera...');
+    try {
+      closeCamera();
+      placeholder.textContent = 'Preview belum aktif';
+      placeholder.style.display = 'block';
+    } catch (err) {
+      fatal('Error saat closeCamera()', err);
+    }
+  });
+
+  function toggleLayer(layerName, btnEl) {
+    const current = getOverlayState().layers[layerName];
+    const nextVisible = !current.visible;
+    setLayerVisible(layerName, nextVisible);
+    btnEl.classList.toggle('btn--primary', nextVisible);
+    btnEl.classList.toggle('btn--secondary', !nextVisible);
+    log(`layer ${layerName} → visible=${nextVisible}`);
+  }
+
+  document.getElementById('btn-crosshair').addEventListener('click', (e) => {
+    try { toggleLayer(OVERLAY_LAYERS.CROSSHAIR, e.target); } catch (err) { fatal('Error toggle crosshair', err); }
+  });
+  document.getElementById('btn-grid').addEventListener('click', (e) => {
+    try { toggleLayer(OVERLAY_LAYERS.GRID, e.target); } catch (err) { fatal('Error toggle grid', err); }
+  });
+  document.getElementById('btn-safearea').addEventListener('click', (e) => {
+    try { toggleLayer(OVERLAY_LAYERS.SAFE_AREA, e.target); } catch (err) { fatal('Error toggle safe area', err); }
+  });
+
+  document.getElementById('btn-roi').addEventListener('click', (e) => {
+    try {
+      const current = getOverlayState().layers[OVERLAY_LAYERS.ROI];
+      if (current.visible) {
+        setLayerVisible(OVERLAY_LAYERS.ROI, false);
+        setROI(null);
+        e.target.classList.replace('btn--primary', 'btn--secondary');
+        log('ROI dimatikan');
+      } else {
+        setROI({ x: 0.25, y: 0.35, w: 0.5, h: 0.3 }); // contoh area tetap, murni demo visual
+        setLayerVisible(OVERLAY_LAYERS.ROI, true);
+        e.target.classList.replace('btn--secondary', 'btn--primary');
+        log('ROI demo ditampilkan di (0.25, 0.35, 0.5, 0.3)');
+      }
+    } catch (err) {
+      fatal('Error toggle ROI', err);
+    }
+  });
+
+  document.getElementById('opacity-slider').addEventListener('input', (e) => {
+    try {
+      setLayerOpacity(OVERLAY_LAYERS.CROSSHAIR, Number(e.target.value));
+    } catch (err) {
+      fatal('Error setLayerOpacity()', err);
+    }
+  });
+</script>
+</body>
+</html>
