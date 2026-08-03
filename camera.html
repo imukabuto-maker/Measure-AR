@@ -15,22 +15,60 @@
   <header class="topbar">
     <div class="topbar__brand"><span class="dot"></span>Camera</div>
     <div class="topbar__actions">
+      <span class="badge badge--neutral" id="camera-session-badge">Kamera: inactive</span>
       <span class="badge badge--warn">Belum kalibrasi</span>
     </div>
   </header>
 
   <main class="screen" style="padding-top: var(--sp-4);">
-    <div class="viewfinder" style="margin-bottom: var(--sp-4);">
+    <div class="card card--pad" id="camera-error-banner" style="display:none; margin-bottom: var(--sp-4); border-color: var(--danger);">
+      <p class="eyebrow" style="color: var(--danger); margin-bottom:6px;">Error Kamera</p>
+      <p id="camera-error-text" style="font-size: var(--fs-sm); color: var(--text-primary); margin:0;"></p>
+    </div>
+
+    <div class="viewfinder" id="preview-container" style="margin-bottom: var(--sp-4); display:flex; align-items:center; justify-content:center;">
       <div class="viewfinder__grid"></div>
       <div class="viewfinder__hud">
-        <span class="badge badge--neutral">Auto</span>
-        <span class="badge badge--neutral mono">1x</span>
+        <span class="badge badge--neutral" id="hud-auto-badge">Auto</span>
+        <span class="badge badge--neutral mono" id="hud-zoom-badge">1.0x</span>
       </div>
       <div class="viewfinder__corners">
         <span></span><span></span><span></span><span></span>
       </div>
       <div class="viewfinder__object">
         <div class="viewfinder__dim-label">? mm — kalibrasi diperlukan</div>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-4);">
+      <button class="btn btn--primary" id="btn-open-camera">Buka Kamera</button>
+      <button class="btn btn--secondary" id="btn-close-camera">Tutup Kamera</button>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="zoom-slider">Zoom</label>
+      <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" style="width:100%; accent-color: var(--accent); height:40px;">
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="exposure-slider">Exposure Compensation (EV)</label>
+      <input type="range" id="exposure-slider" min="-2" max="2" step="0.1" value="0" style="width:100%; accent-color: var(--accent); height:40px;">
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Overlay Crosshair</p>
+          <p class="toggle-row__hint">Tanda silang di tengah frame</p>
+        </div>
+        <div class="switch" role="switch" aria-checked="false" id="overlay-crosshair-switch"></div>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Overlay Grid</p>
+          <p class="toggle-row__hint">Grid rule-of-thirds</p>
+        </div>
+        <div class="switch" role="switch" aria-checked="false" id="overlay-grid-switch"></div>
       </div>
     </div>
 
@@ -45,10 +83,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m5 17 4.5-5 3 3.5L16 12l3 5"/></svg>
       </button>
       <button class="shutter" aria-label="Ambil gambar"><span class="shutter__inner"></span></button>
-      <button class="icon-btn" aria-label="Ganti kamera" style="width:44px;height:44px;">
+      <button class="icon-btn" aria-label="Ganti kamera" id="btn-switch-camera" style="width:44px;height:44px;">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 20 5.5l-3 3"/><path d="M20 5.5H8a5 5 0 0 0-5 5"/><path d="M7 21.5 4 18.5l3-3"/><path d="M4 18.5h12a5 5 0 0 0 5-5"/></svg>
       </button>
     </div>
+
+    <button class="btn btn--secondary" id="btn-focus-lock" style="margin-bottom: var(--sp-6); width:100%;">Kunci Fokus</button>
 
     <div class="card card--pad">
       <p class="eyebrow" style="margin-bottom:6px;">Petunjuk</p>
@@ -80,5 +120,7 @@
   </nav>
 
 </div>
+<script type="module" src="js/core/router.js"></script>
+<script type="module" src="js/core/cameraPageController.js"></script>
 </body>
 </html>
