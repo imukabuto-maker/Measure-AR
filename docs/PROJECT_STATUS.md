@@ -4,13 +4,13 @@ Project Name :
 MeasureVision
 
 Version :
-0.1.5
+0.1.6
 
 Status :
 Development
 
 Last Update :
-Sprint 8 Completed
+Sprint 9 Completed
 
 ---
 
@@ -20,87 +20,57 @@ Status :
 🟢 Healthy
 
 Milestone :
+Milestone 1 - Foundation & Camera Core
 
-Milestone 1
-Foundation & Camera Core
+Progress :
+█████████░
+9 / 10 Module
 
-Progress
-
-████████░░
-
-8 / 10 Module
-
-Overall Progress
-
-████████░░░░░░░░░░░░░░
-
-8 / 30 Sprint
+Overall Progress :
+█████████░░░░░░░░░░░░░░
+9 / 30 Sprint
 
 ---
 
 # VERSION HISTORY
 
-v0.1.0
-Foundation
+v0.1.0 - Foundation
 
-v0.1.1
-Permission Manager
+v0.1.1 - Permission Manager
 
-v0.1.2
-Camera Engine
+v0.1.2 - Camera Engine
 
-v0.1.3
-Focus Manager
+v0.1.3 - Focus Manager
 
-v0.1.4
-Zoom Manager
+v0.1.4 - Zoom Manager
 
-v0.1.5
-Exposure Manager
+v0.1.5 - Exposure Manager
+
+v0.1.6 - Overlay Framework
 
 ---
 
 # SPRINT PROGRESS
 
-Sprint 1
-Project Structure
-✅ DONE
+✅ Sprint 1 - Project Structure
 
-Sprint 2
-User Interface
-✅ DONE
+✅ Sprint 2 - User Interface
 
-Sprint 3
-SPA Router
-✅ DONE
+✅ Sprint 3 - SPA Router
 
-Sprint 4
-Permission Manager
-✅ DONE
+✅ Sprint 4 - Permission Manager
 
-Sprint 5
-Camera Engine
-✅ DONE
+✅ Sprint 5 - Camera Engine
 
-Sprint 6
-Focus Manager
-✅ DONE
+✅ Sprint 6 - Focus Manager
 
-Sprint 7
-Zoom Manager
-✅ DONE
+✅ Sprint 7 - Zoom Manager
 
-Sprint 8
-Exposure Manager
-✅ DONE
+✅ Sprint 8 - Exposure Manager
 
-Sprint 9
-Overlay Framework
-🟡 READY
+✅ Sprint 9 - Overlay Framework
 
-Sprint 10
-Camera Optimization
-⏳ TODO
+🟡 Sprint 10 - Camera Lifecycle Manager
 
 ---
 
@@ -122,53 +92,87 @@ Camera Optimization
 
 ✅ Exposure Manager
 
+✅ Overlay Framework
+
 ---
 
 # CAMERA CORE
 
-Permission
-✅
+Permission           ✅
 
-Camera
-✅
+Camera Engine        ✅
 
-Focus
-✅
+Focus                ✅
 
-Zoom
-✅
+Zoom                 ✅
 
-Exposure
-✅
+Exposure             ✅
 
-Overlay
-⏳
+Overlay              ✅
 
-Optimization
-⏳
+Lifecycle            ⏳
 
 ---
 
 # NEXT TARGET
 
-Sprint 9
+Sprint 10
+
+Camera Lifecycle Manager
+
+---
+
+# CURRENT ARCHITECTURE
+
+index.html
+
+↓
+
+SPA Router
+
+↓
+
+Permission Manager
+
+↓
+
+Camera Engine
+
+↓
+
+Focus Manager
+
+↓
+
+Zoom Manager
+
+↓
+
+Exposure Manager
+
+↓
 
 Overlay Framework
+
+↓
+
+Camera Lifecycle Manager
+
+↓
+
+Calibration Engine
 
 ---
 
 # BUG STATUS
 
-Critical
-
+Critical :
 None
 
-Major
-
+Major :
 None
 
-Minor
-
+Minor :
 None
 
 ---
@@ -185,17 +189,17 @@ Do Not Modify
 - Focus Manager
 - Zoom Manager
 - Exposure Manager
+- Overlay Framework
 
-Kecuali diperlukan untuk integrasi Overlay.
+Kecuali diperlukan untuk integrasi Camera Lifecycle Manager.
 
 ---
 
 # NEXT ACTION
 
-Sprint 9
+Sprint 10
 
-Overlay Framework
+Camera Lifecycle Manager
 
-Status
-
+Status :
 READY
