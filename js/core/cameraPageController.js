@@ -33,8 +33,8 @@ import {
 } from './cameraLifecycleManager.js';
 import { switchCamera } from './cameraManager.js';
 import { lockFocus, unlockFocus, onFocusStateChange, FOCUS_STATE } from './focusManager.js';
-import { setZoomFromSlider, onZoomStateChange } from './zoomManager.js';
-import { setExposureCompensation, onExposureStateChange } from './exposureManager.js';
+import { zoomIn, zoomOut, onZoomStateChange } from './zoomManager.js';
+import { setExposureCompensation, onExposureStateChange, getExposureState } from './exposureManager.js';
 import { setLayerVisible, OVERLAY_LAYERS } from './overlayManager.js';
 
 const SESSION_BADGE_CLASS = {
@@ -62,14 +62,16 @@ function wireCameraPage(container) {
   const errorBanner = document.getElementById('camera-error-banner');
   const errorText = document.getElementById('camera-error-text');
   const sessionBadge = document.getElementById('camera-session-badge');
-  const hudFocusBadge = document.getElementById('hud-auto-badge');
   const hudZoomBadge = document.getElementById('hud-zoom-badge');
+  const hudExposureBadge = document.getElementById('hud-exposure-badge');
   const btnOpen = document.getElementById('btn-open-camera');
   const btnClose = document.getElementById('btn-close-camera');
   const btnSwitch = document.getElementById('btn-switch-camera');
   const btnFocusLock = document.getElementById('btn-focus-lock');
-  const zoomSlider = document.getElementById('zoom-slider');
-  const exposureSlider = document.getElementById('exposure-slider');
+  const btnZoomIn = document.getElementById('btn-zoom-in');
+  const btnZoomOut = document.getElementById('btn-zoom-out');
+  const btnExposureUp = document.getElementById('btn-exposure-up');
+  const btnExposureDown = document.getElementById('btn-exposure-down');
   const overlayCrosshair = document.getElementById('overlay-crosshair-switch');
   const overlayGrid = document.getElementById('overlay-grid-switch');
 
@@ -82,7 +84,7 @@ function wireCameraPage(container) {
     if (errorBanner) errorBanner.style.display = 'none';
   }
 
-  // ---- Session (status badge + error banner) ----
+  // ---- Session (status badge + error banner + placeholder saat idle) ----
   unsubscribers.push(onSessionStateChange((state) => {
     if (sessionBadge) {
       sessionBadge.textContent = `Kamera: ${state.status}`;
@@ -93,6 +95,12 @@ function wireCameraPage(container) {
     } else if (state.status === 'active') {
       clearError();
     }
+    // Camera Engine mengosongkan #preview-container saat dibuka, tapi
+    // tidak mengembalikan placeholder saat ditutup — kembalikan manual
+    // supaya kotak preview tidak tampak kosong tanpa keterangan.
+    if (state.status === 'inactive' && !container.querySelector('video')) {
+      container.innerHTML = '<p class="eyebrow" id="preview-placeholder" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:0 var(--sp-6);">Preview belum aktif</p>';
+    }
   }));
 
   const initialSession = getSessionState();
@@ -101,32 +109,24 @@ function wireCameraPage(container) {
     sessionBadge.className = 'badge ' + (SESSION_BADGE_CLASS[initialSession.status] || 'badge--neutral');
   }
 
-  // ---- Focus (HUD badge + lock/unlock button) ----
+  // ---- Focus (tombol lock jadi "aktif" secara visual via aria-checked) ----
   unsubscribers.push(onFocusStateChange((state) => {
-    if (hudFocusBadge) hudFocusBadge.textContent = state.status === FOCUS_STATE.LOCKED ? 'Terkunci' : 'Auto';
-    if (btnFocusLock) btnFocusLock.textContent = state.status === FOCUS_STATE.LOCKED ? 'Buka Kunci Fokus' : 'Kunci Fokus';
+    if (btnFocusLock) btnFocusLock.setAttribute('aria-checked', String(state.status === FOCUS_STATE.LOCKED));
   }));
 
-  // ---- Zoom (HUD badge + slider) ----
+  // ---- Zoom (badge nilai di rail kanan) ----
   unsubscribers.push(onZoomStateChange((state) => {
     if (hudZoomBadge) hudZoomBadge.textContent = `${state.value.toFixed(1)}x`;
-    if (zoomSlider) {
-      zoomSlider.min = state.min;
-      zoomSlider.max = state.max;
-      zoomSlider.step = state.step;
-      zoomSlider.value = state.value;
-    }
   }));
 
-  // ---- Exposure (slider) ----
+  // ---- Exposure (badge nilai di rail kanan) ----
   unsubscribers.push(onExposureStateChange((state) => {
-    if (exposureSlider) {
-      exposureSlider.min = state.min;
-      exposureSlider.max = state.max;
-      exposureSlider.step = state.step;
-      exposureSlider.value = state.compensation;
-      exposureSlider.disabled = state.mode === 'none';
+    if (hudExposureBadge) {
+      const sign = state.compensation > 0 ? '+' : '';
+      hudExposureBadge.textContent = `${sign}${state.compensation.toFixed(1)}`;
     }
+    if (btnExposureUp) btnExposureUp.disabled = state.mode === 'none';
+    if (btnExposureDown) btnExposureDown.disabled = state.mode === 'none';
   }));
 
   // ---- Kontrol: Open / Close / Switch Camera ----
@@ -147,9 +147,9 @@ function wireCameraPage(container) {
     if (!result.success) showError(result.error?.message ?? 'Gagal mengganti kamera.');
   });
 
-  // ---- Kontrol: Focus Lock/Unlock ----
+  // ---- Kontrol: Focus Lock/Unlock (toggle via aria-checked) ----
   btnFocusLock?.addEventListener('click', async () => {
-    const locked = btnFocusLock.textContent === 'Buka Kunci Fokus';
+    const locked = btnFocusLock.getAttribute('aria-checked') === 'true';
     if (locked) {
       await unlockFocus();
     } else {
@@ -157,14 +157,18 @@ function wireCameraPage(container) {
     }
   });
 
-  // ---- Kontrol: Zoom slider ----
-  zoomSlider?.addEventListener('input', (e) => {
-    setZoomFromSlider(e.target.value);
-  });
+  // ---- Kontrol: Zoom in/out (ikon, bukan slider) ----
+  btnZoomIn?.addEventListener('click', () => zoomIn());
+  btnZoomOut?.addEventListener('click', () => zoomOut());
 
-  // ---- Kontrol: Exposure slider ----
-  exposureSlider?.addEventListener('input', (e) => {
-    setExposureCompensation(Number(e.target.value));
+  // ---- Kontrol: Exposure naik/turun (ikon, bukan slider) ----
+  btnExposureUp?.addEventListener('click', () => {
+    const current = getExposureState();
+    setExposureCompensation(current.compensation + current.step);
+  });
+  btnExposureDown?.addEventListener('click', () => {
+    const current = getExposureState();
+    setExposureCompensation(current.compensation - current.step);
   });
 
   // ---- Kontrol: Overlay layer switches ----
