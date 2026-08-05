@@ -4,13 +4,13 @@ Project Name:
 MeasureVision
 
 Version:
-0.3.0
+0.3.1
 
 Status:
 Development
 
 Last Update:
-Sprint 10.5 Completed
+Sprint 11 Completed
 
 ---
 
@@ -36,9 +36,9 @@ None
 
 ---
 
-# MILESTONE
+# MILESTONE STATUS
 
-✅ Milestone 1
+## ✅ Milestone 1
 Foundation & Camera Core
 
 Status:
@@ -47,16 +47,16 @@ COMPLETED
 Completion:
 100%
 
---------------------------------------------
+---
 
-🟡 Milestone 2
+## 🟡 Milestone 2
 Data & Calibration
 
-Status:
-READY
+Progress:
+1 / 5
 
 Completion:
-0%
+20%
 
 ---
 
@@ -66,7 +66,7 @@ Completion:
 
 ✅ Project Structure
 
-✅ UI
+✅ User Interface
 
 ✅ SPA Router
 
@@ -92,24 +92,9 @@ Completion:
 
 ---
 
-# NEXT ROADMAP
+## Data Layer
 
-Milestone 2
-
-Sprint 11
-Database Foundation (IndexedDB)
-
-Sprint 12
-Project Manager
-
-Sprint 13
-Calibration Engine
-
-Sprint 14
-Calibration Profile
-
-Sprint 15
-Geometry Engine
+✅ Database Foundation
 
 ---
 
@@ -127,39 +112,64 @@ Camera Core
 
 ↓
 
-Data Layer
+Repository Layer
 
 ↓
 
-Calibration
+IndexedDB
 
 ↓
 
-Measurement
+Calibration Engine
 
 ↓
 
-OpenCV
+Measurement Engine
 
 ↓
 
-Export
+OpenCV Engine
 
 ---
 
-# DEVELOPMENT PHASE
+# NEXT ROADMAP
 
-Current Phase
+Milestone 2
 
-Data Layer
+✅ Sprint 11
+Database Foundation
+
+🟡 Sprint 12
+Project Manager
+
+⏳ Sprint 13
+Calibration Engine
+
+⏳ Sprint 14
+Calibration Profile
+
+⏳ Sprint 15
+Geometry Engine
+
+---
+
+# DEFINITION OF DONE
+
+Sebuah Sprint dinyatakan selesai jika:
+
+- Modul selesai dibuat
+- Terintegrasi ke aplikasi utama
+- Lolos pengujian
+- Tidak ada error console
+- PROJECT_STATUS diperbarui
 
 ---
 
 # NEXT TARGET
 
-Sprint 11
+Sprint 12
 
-Database Foundation
+Project Manager
 
 Status:
 READY
