@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>Test — Database Foundation</title>
+<!-- Halaman uji manual khusus Sprint 11. Berdiri sendiri, TIDAK
+     terhubung ke router/navigasi utama, dan tidak mengubah UI
+     halaman lain. Memakai token & komponen CSS yang sudah ada. -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand"><span class="dot"></span>Test: Database</div>
+  </header>
+
+  <main class="screen">
+    <div class="screen__header">
+      <p class="eyebrow">Sprint 11 — QA Manual</p>
+      <h1 class="screen__title">Database Foundation</h1>
+      <p class="screen__subtitle">Uji buka database, migrasi skema, dan CRUD generik lewat Repository. Bisa dites via file:// maupun HTTPS (IndexedDB tidak butuh secure context).</p>
+    </div>
+
+    <div class="card card--pad" id="error-banner" style="display:none; margin-bottom: var(--sp-4); border-color: var(--danger);">
+      <p class="eyebrow" style="color: var(--danger); margin-bottom:6px;">Error Terdeteksi</p>
+      <p id="error-banner-text" class="mono" style="font-size: var(--fs-xs); color: var(--text-primary); white-space:pre-wrap; margin:0;"></p>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Status Database</p>
+          <p class="toggle-row__hint" id="db-status">belum dibuka</p>
+        </div>
+        <span class="badge badge--neutral" id="db-badge">IDLE</span>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Jumlah Project Tersimpan</p>
+          <p class="toggle-row__hint" id="db-count">–</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--primary" id="btn-open">Buka Database</button>
+      <button class="btn btn--secondary" id="btn-add">Tambah Project Dummy</button>
+    </div>
+    <div class="btn-row" style="margin-bottom: var(--sp-5);">
+      <button class="btn btn--secondary" id="btn-list">Refresh Daftar</button>
+      <button class="btn btn--danger-outline" id="btn-clear">Hapus Semua</button>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <p class="eyebrow" style="margin-bottom:6px;">Daftar Project (store: projects)</p>
+      <pre id="project-list" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;">(kosong)</pre>
+    </div>
+
+    <div class="card card--pad">
+      <p class="eyebrow" style="margin-bottom:6px;">Log</p>
+      <pre id="log" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;"></pre>
+    </div>
+  </main>
+</div>
+
+<script>
+  function showFatalError(title, detail) {
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    if (banner && text) {
+      banner.style.display = 'block';
+      text.textContent += `${title}\n${detail}\n\n`;
+    }
+    const logEl = document.getElementById('log');
+    if (logEl) logEl.textContent += `[FATAL] ${title}: ${detail}\n`;
+  }
+  window.addEventListener('error', (event) => {
+    showFatalError('window.error', event.message || String(event.error) || 'Unknown error');
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    showFatalError('unhandledrejection', event.reason && event.reason.message ? event.reason.message : String(event.reason));
+  });
+</script>
+
+<script type="module">
+  const dbStatusEl = document.getElementById('db-status');
+  const dbBadgeEl = document.getElementById('db-badge');
+  const dbCountEl = document.getElementById('db-count');
+  const projectListEl = document.getElementById('project-list');
+  const logEl = document.getElementById('log');
+
+  function log(message) {
+    const time = new Date().toLocaleTimeString('id-ID');
+    logEl.textContent += `[${time}] ${message}\n`;
+  }
+  function fatal(title, err) {
+    const detail = (err && err.message) ? err.message : JSON.stringify(err);
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    banner.style.display = 'block';
+    text.textContent += `${title}\n${detail}\n\n`;
+    log(`[FATAL] ${title}: ${detail}`);
+  }
+
+  log('Memuat module databaseManager.js & repository.js...');
+
+  let databaseManager, repositoryModule;
+  try {
+    [databaseManager, repositoryModule] = await Promise.all([
+      import('../js/database/databaseManager.js'),
+      import('../js/database/repository.js'),
+    ]);
+    log('Module berhasil dimuat.');
+  } catch (err) {
+    fatal('Gagal memuat module', err);
+    throw err;
+  }
+
+  const { openDatabase } = databaseManager;
+  const { createRepository } = repositoryModule;
+  const projectsRepo = createRepository('projects');
+
+  async function refreshList() {
+    try {
+      const all = await projectsRepo.getAll();
+      const count = await projectsRepo.count();
+      dbCountEl.textContent = String(count);
+      projectListEl.textContent = all.length
+        ? all.map((p) => `${p.id} — ${p.name} (${p.createdAt})`).join('\n')
+        : '(kosong)';
+      log(`Daftar di-refresh: ${count} project.`);
+    } catch (err) {
+      fatal('Error saat getAll()/count()', err);
+    }
+  }
+
+  document.getElementById('btn-open').addEventListener('click', async () => {
+    log('Membuka database (akan memicu migrasi jika perlu)...');
+    try {
+      const db = await openDatabase();
+      dbStatusEl.textContent = `terbuka — ${db.name} v${db.version}, stores: ${Array.from(db.objectStoreNames).join(', ')}`;
+      dbBadgeEl.textContent = 'OPEN';
+      dbBadgeEl.className = 'badge badge--ok';
+      log(`Database terbuka: ${db.name} versi ${db.version}.`);
+      await refreshList();
+    } catch (err) {
+      dbBadgeEl.textContent = 'ERROR';
+      dbBadgeEl.className = 'badge badge--danger';
+      fatal(`Gagal buka database [${err.code}]`, { message: err.message });
+    }
+  });
+
+  document.getElementById('btn-add').addEventListener('click', async () => {
+    try {
+      const id = 'proj-' + Date.now();
+      const item = { id, name: `Project Dummy ${new Date().toLocaleTimeString('id-ID')}`, createdAt: new Date().toISOString() };
+      await projectsRepo.add(item);
+      log(`Berhasil add(): ${id}`);
+      await refreshList();
+    } catch (err) {
+      fatal(`Error saat add() [${err.code ?? '?'}]`, { message: err.message });
+    }
+  });
+
+  document.getElementById('btn-list').addEventListener('click', refreshList);
+
+  document.getElementById('btn-clear').addEventListener('click', async () => {
+    try {
+      await projectsRepo.clear();
+      log('Semua data di store "projects" dihapus.');
+      await refreshList();
+    } catch (err) {
+      fatal(`Error saat clear() [${err.code ?? '?'}]`, { message: err.message });
+    }
+  });
+</script>
+</body>
+</html>
