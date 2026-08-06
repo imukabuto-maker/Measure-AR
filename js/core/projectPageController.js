@@ -88,12 +88,12 @@ function renderProjects(state) {
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: var(--sp-3);">
         <div style="min-width:0;">
           <p style="font-size: var(--fs-md); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.name)}</p>
-          <p class="mono" style="font-size: var(--fs-2xs); color: var(--text-tertiary); margin-top:4px; text-transform:uppercase; letter-spacing: var(--tracking-wide);">${p.measurementCount} item · dibuat ${formatDate(p.createdAt)}</p>
+          <p class="mono" style="font-size: var(--fs-2xs); color: var(--text-tertiary); margin-top:4px; text-transform:uppercase; letter-spacing: var(--tracking-wide);">${p.measurementCount ?? 0} item · dibuat ${formatDate(p.createdAt)}</p>
         </div>
         <div style="display:flex; align-items:center; gap: var(--sp-2); flex-shrink:0;">
           ${p.id === state.activeProjectId ? '<span class="badge badge--ok">Aktif</span>' : ''}
-          <button class="icon-btn project-delete-btn" data-project-id="${escapeHtml(p.id)}" aria-label="Hapus project" style="width:32px;height:32px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg>
+          <button type="button" class="project-delete-btn" data-project-id="${escapeHtml(p.id)}" aria-label="Hapus project" style="width:32px;height:32px;flex-shrink:0;display:grid;place-items:center;background:transparent;border:none;-webkit-appearance:none;appearance:none;border-radius:8px;padding:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg>
           </button>
         </div>
       </div>
