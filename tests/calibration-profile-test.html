@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>Test — Calibration Profile Manager</title>
+<!-- Halaman uji manual khusus Sprint 13. Berdiri sendiri, TIDAK
+     terhubung ke router/navigasi utama, dan tidak mengubah UI
+     halaman lain. Memakai token & komponen CSS yang sudah ada. -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand"><span class="dot"></span>Test: Calibration Profile</div>
+  </header>
+
+  <main class="screen">
+    <div class="screen__header">
+      <p class="eyebrow">Sprint 13 — QA Manual</p>
+      <h1 class="screen__title">Calibration Profile Manager</h1>
+      <p class="screen__subtitle">Uji CRUD, duplicate, select active, dan restore last-used profile.</p>
+    </div>
+
+    <div class="card card--pad" id="error-banner" style="display:none; margin-bottom: var(--sp-4); border-color: var(--danger);">
+      <p class="eyebrow" style="color: var(--danger); margin-bottom:6px;">Error Terdeteksi</p>
+      <p id="error-banner-text" class="mono" style="font-size: var(--fs-xs); color: var(--text-primary); white-space:pre-wrap; margin:0;"></p>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--primary" id="btn-create">Buat Profil Dummy</button>
+      <button class="btn btn--secondary" id="btn-restore">Restore Last Used</button>
+    </div>
+    <div class="btn-row" style="margin-bottom: var(--sp-5);">
+      <button class="btn btn--secondary" id="btn-list">Refresh Daftar</button>
+      <button class="btn btn--danger-outline" id="btn-clear-active">Batalkan Aktif</button>
+    </div>
+
+    <div id="profile-list-container">
+      <div class="empty-state">
+        <p class="empty-state__title">Belum ada profil</p>
+      </div>
+    </div>
+
+    <div class="card card--pad" style="margin-top: var(--sp-4);">
+      <p class="eyebrow" style="margin-bottom:6px;">Log</p>
+      <pre id="log" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;"></pre>
+    </div>
+  </main>
+</div>
+
+<script>
+  function showFatalError(title, detail) {
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    if (banner && text) {
+      banner.style.display = 'block';
+      text.textContent += `${title}\n${detail}\n\n`;
+    }
+    const logEl = document.getElementById('log');
+    if (logEl) logEl.textContent += `[FATAL] ${title}: ${detail}\n`;
+  }
+  window.addEventListener('error', (event) => {
+    showFatalError('window.error', event.message || String(event.error) || 'Unknown error');
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    showFatalError('unhandledrejection', event.reason && event.reason.message ? event.reason.message : String(event.reason));
+  });
+</script>
+
+<script type="module">
+  const listContainer = document.getElementById('profile-list-container');
+  const logEl = document.getElementById('log');
+
+  function log(message) {
+    const time = new Date().toLocaleTimeString('id-ID');
+    logEl.textContent += `[${time}] ${message}\n`;
+  }
+  function fatal(title, err) {
+    const detail = (err && err.message) ? err.message : String(err);
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    banner.style.display = 'block';
+    text.textContent += `${title}\n${detail}\n\n`;
+    log(`[FATAL] ${title}: ${detail}`);
+  }
+
+  log('Memuat module calibrationProfileManager.js...');
+
+  let calibrationProfileManager;
+  try {
+    calibrationProfileManager = await import('../js/core/calibrationProfileManager.js');
+    log('Module berhasil dimuat.');
+  } catch (err) {
+    fatal('Gagal memuat module', err);
+    throw err;
+  }
+
+  const {
+    listProfiles, createProfile, editProfile, deleteProfile, duplicateProfile,
+    selectActiveProfile, restoreLastUsedProfile,
+    onCalibrationProfileStateChange, getCalibrationProfileState,
+  } = calibrationProfileManager;
+
+  function render(state) {
+    if (!state.profiles.length) {
+      listContainer.innerHTML = '<div class="empty-state"><p class="empty-state__title">Belum ada profil</p></div>';
+      return;
+    }
+    listContainer.innerHTML = state.profiles.map((p) => `
+      <div class="card card--pad" style="margin-bottom: var(--sp-3); ${p.id === state.activeProfileId ? 'border-color: var(--accent);' : ''}">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: var(--sp-3);">
+          <div style="min-width:0;">
+            <p style="font-weight:600;">${p.profileName}</p>
+            <p class="mono" style="font-size: var(--fs-2xs); color: var(--text-tertiary); margin-top:4px;">
+              ref: ${p.referenceLength}${p.referenceUnit} · ppu: ${p.pixelPerUnit ?? '–'} · ${p.orientation}
+            </p>
+          </div>
+          ${p.id === state.activeProfileId ? '<span class="badge badge--ok">Aktif</span>' : ''}
+        </div>
+        <div class="btn-row" style="margin-top: var(--sp-3);">
+          <button class="btn btn--secondary select-btn" data-id="${p.id}" style="height:36px; font-size:var(--fs-xs);">Pilih Aktif</button>
+          <button class="btn btn--secondary dup-btn" data-id="${p.id}" style="height:36px; font-size:var(--fs-xs);">Duplikat</button>
+          <button class="btn btn--danger-outline del-btn" data-id="${p.id}" style="height:36px; font-size:var(--fs-xs);">Hapus</button>
+        </div>
+      </div>
+    `).join('');
+
+    listContainer.querySelectorAll('.select-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await selectActiveProfile(btn.dataset.id);
+          log(`Profil dipilih aktif: ${btn.dataset.id}`);
+        } catch (err) { fatal('Error selectActiveProfile()', err); }
+      });
+    });
+    listContainer.querySelectorAll('.dup-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          const dup = await duplicateProfile(btn.dataset.id);
+          log(`Profil diduplikasi: ${dup.id} ("${dup.profileName}")`);
+        } catch (err) { fatal('Error duplicateProfile()', err); }
+      });
+    });
+    listContainer.querySelectorAll('.del-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await deleteProfile(btn.dataset.id);
+          log(`Profil dihapus: ${btn.dataset.id}`);
+        } catch (err) { fatal('Error deleteProfile()', err); }
+      });
+    });
+  }
+
+  onCalibrationProfileStateChange(render);
+  render(getCalibrationProfileState());
+
+  document.getElementById('btn-create').addEventListener('click', async () => {
+    try {
+      const n = Math.floor(Math.random() * 100);
+      const profile = await createProfile({
+        profileName: `Profil Koin 25mm #${n}`,
+        referenceLength: 25,
+        referenceUnit: 'mm',
+        orientation: 'portrait',
+        notes: 'Dibuat dari halaman test.',
+      });
+      log(`Profil dibuat: ${profile.id}`);
+    } catch (err) {
+      fatal('Error createProfile()', err);
+    }
+  });
+
+  document.getElementById('btn-list').addEventListener('click', async () => {
+    try {
+      const list = await listProfiles();
+      log(`Daftar di-refresh: ${list.length} profil.`);
+    } catch (err) {
+      fatal('Error listProfiles()', err);
+    }
+  });
+
+  document.getElementById('btn-restore').addEventListener('click', async () => {
+    try {
+      const restored = await restoreLastUsedProfile();
+      log(restored ? `Profil terakhir dipulihkan: ${restored.id} ("${restored.profileName}")` : 'Tidak ada profil terakhir yang tersimpan.');
+    } catch (err) {
+      fatal('Error restoreLastUsedProfile()', err);
+    }
+  });
+
+  document.getElementById('btn-clear-active').addEventListener('click', () => {
+    const state = getCalibrationProfileState();
+    log(`Profil aktif saat ini: ${state.activeProfileId ?? '(tidak ada)'}`);
+  });
+
+  // Muat daftar saat halaman pertama dibuka
+  listProfiles().catch((err) => fatal('Error saat listProfiles() awal', err));
+</script>
+</body>
+</html>

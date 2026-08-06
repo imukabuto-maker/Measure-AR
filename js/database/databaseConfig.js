@@ -19,17 +19,12 @@
 export const DB_NAME = 'measurevision-db';
 
 // Naikkan angka ini setiap kali menambah entri baru ke SCHEMA.
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 
 /**
  * Skema per versi. Setiap key adalah nomor versi; isinya daftar
  * store yang harus ADA pada versi tsb (dibuat jika belum ada — bukan
  * dihapus/diganti, supaya migrasi selalu aman & idempotent).
- *
- * NOTE (Sprint 11 scope): hanya store fondasi generik yang
- * didefinisikan di sini ('projects', 'settings') — skema untuk
- * Calibration/Measurement akan ditambahkan sebagai entri versi baru
- * di sprint masing-masing, TANPA mengubah struktur yang sudah ada.
  */
 export const SCHEMA = Object.freeze({
   1: {
@@ -49,6 +44,19 @@ export const SCHEMA = Object.freeze({
         name: 'settings',
         options: { keyPath: 'key' },
         indexes: [],
+      },
+    ],
+  },
+  // [Sprint 13] Calibration Profile Manager — hanya menyimpan
+  // metadata profil kalibrasi, tidak ada logika kalkulasi di sini.
+  3: {
+    stores: [
+      {
+        name: 'calibrationProfiles',
+        options: { keyPath: 'id' },
+        indexes: [
+          { name: 'updatedAt', keyPath: 'updatedAt', options: { unique: false } },
+        ],
       },
     ],
   },
