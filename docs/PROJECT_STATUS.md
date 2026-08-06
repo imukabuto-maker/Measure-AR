@@ -4,17 +4,17 @@ Project Name:
 MeasureVision
 
 Version:
-0.3.1
+0.3.2
 
 Status:
 Development
 
 Last Update:
-Sprint 11 Completed
+Sprint 12 Completed
 
----
+--------------------------------------------------
 
-# PROJECT HEALTH
+PROJECT HEALTH
 
 Status:
 🟢 Excellent
@@ -23,7 +23,7 @@ Architecture:
 Stable
 
 Technical Debt:
-Low
+Very Low
 
 Critical Bug:
 None
@@ -34,11 +34,11 @@ None
 Minor Bug:
 None
 
----
+--------------------------------------------------
 
-# MILESTONE STATUS
+MILESTONE STATUS
 
-## ✅ Milestone 1
+✅ Milestone 1
 Foundation & Camera Core
 
 Status:
@@ -47,32 +47,32 @@ COMPLETED
 Completion:
 100%
 
----
+--------------------------------------------
 
-## 🟡 Milestone 2
+🟡 Milestone 2
 Data & Calibration
 
 Progress:
-1 / 5
+2 / 5
 
 Completion:
-20%
+40%
 
----
+--------------------------------------------
 
-# COMPLETED MODULE
+COMPLETED MODULE
 
-## Foundation
+FOUNDATION
 
 ✅ Project Structure
 
-✅ User Interface
+✅ UI
 
 ✅ SPA Router
 
----
+--------------------------------------------
 
-## Camera Core
+CAMERA CORE
 
 ✅ Permission Manager
 
@@ -90,15 +90,17 @@ Completion:
 
 ✅ Camera Core Integration
 
----
+--------------------------------------------
 
-## Data Layer
+DATA LAYER
 
 ✅ Database Foundation
 
----
+✅ Project Manager
 
-# CURRENT ARCHITECTURE
+--------------------------------------------
+
+CURRENT ARCHITECTURE
 
 Application
 
@@ -116,60 +118,52 @@ Repository Layer
 
 ↓
 
-IndexedDB
+Project Manager
 
 ↓
 
-Calibration Engine
+Calibration
 
 ↓
 
-Measurement Engine
+Measurement
 
 ↓
 
-OpenCV Engine
+OpenCV
 
----
+↓
 
-# NEXT ROADMAP
+Export
+
+--------------------------------------------------
+
+NEXT ROADMAP
 
 Milestone 2
 
 ✅ Sprint 11
 Database Foundation
 
-🟡 Sprint 12
+✅ Sprint 12
 Project Manager
 
-⏳ Sprint 13
-Calibration Engine
+🟡 Sprint 13
+Calibration Profile Manager
 
 ⏳ Sprint 14
-Calibration Profile
+Calibration Engine
 
 ⏳ Sprint 15
 Geometry Engine
 
----
+--------------------------------------------------
 
-# DEFINITION OF DONE
+NEXT TARGET
 
-Sebuah Sprint dinyatakan selesai jika:
+Sprint 13
 
-- Modul selesai dibuat
-- Terintegrasi ke aplikasi utama
-- Lolos pengujian
-- Tidak ada error console
-- PROJECT_STATUS diperbarui
-
----
-
-# NEXT TARGET
-
-Sprint 12
-
-Project Manager
+Calibration Profile Manager
 
 Status:
 READY
