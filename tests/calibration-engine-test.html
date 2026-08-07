@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121517">
+<title>Test — Calibration Engine</title>
+<!-- Halaman uji manual khusus Sprint 14. Berdiri sendiri, TIDAK
+     terhubung ke router/navigasi utama, dan tidak mengubah UI
+     halaman lain. Memakai token & komponen CSS yang sudah ada. -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar__brand"><span class="dot"></span>Test: Calibration Engine</div>
+  </header>
+
+  <main class="screen">
+    <div class="screen__header">
+      <p class="eyebrow">Sprint 14 — QA Manual</p>
+      <h1 class="screen__title">Calibration Engine</h1>
+      <p class="screen__subtitle">Urutan: Buka Kamera → Buat/Pilih Profil Aktif → Mulai Kalibrasi → tap 2 titik di preview → isi panjang referensi → Hitung → Simpan.</p>
+    </div>
+
+    <div class="card card--pad" id="error-banner" style="display:none; margin-bottom: var(--sp-4); border-color: var(--danger);">
+      <p class="eyebrow" style="color: var(--danger); margin-bottom:6px;">Error Terdeteksi</p>
+      <p id="error-banner-text" class="mono" style="font-size: var(--fs-xs); color: var(--text-primary); white-space:pre-wrap; margin:0;"></p>
+    </div>
+
+    <div class="viewfinder" id="preview-container" style="margin-bottom: var(--sp-4); display:flex; align-items:center; justify-content:center;">
+      <p class="eyebrow" id="preview-placeholder">Preview belum aktif</p>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-4);">
+      <button class="btn btn--primary" id="btn-open">Open Camera</button>
+      <button class="btn btn--secondary" id="btn-close">Close Camera</button>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Profil Aktif</p>
+          <p class="toggle-row__hint" id="active-profile-label">(belum ada)</p>
+        </div>
+        <button class="btn btn--secondary" id="btn-create-profile" style="width:auto; height:36px; font-size:var(--fs-xs); padding:0 var(--sp-3);">+ Buat & Pilih</button>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-3);">
+      <button class="btn btn--primary" id="btn-start">Mulai Kalibrasi</button>
+      <button class="btn btn--secondary" id="btn-cancel">Batal</button>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-row__label">Status Sesi</p>
+          <p class="toggle-row__hint" id="session-status">idle</p>
+        </div>
+        <span class="badge badge--neutral" id="session-badge">IDLE</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="ref-length">Panjang Referensi</label>
+      <div class="unit-input">
+        <input class="input" id="ref-length" type="number" inputmode="decimal" placeholder="25">
+        <select class="select" id="ref-unit" style="width:90px; border-radius: 0 var(--radius-md) var(--radius-md) 0;">
+          <option value="mm">mm</option>
+          <option value="cm">cm</option>
+          <option value="in">in</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: var(--sp-5);">
+      <button class="btn btn--secondary" id="btn-compute">Hitung</button>
+      <button class="btn btn--primary" id="btn-save">Simpan ke Profil</button>
+    </div>
+
+    <div class="card card--pad" style="margin-bottom: var(--sp-4);">
+      <p class="eyebrow" style="margin-bottom:6px;">Ringkasan Hasil</p>
+      <pre id="result-summary" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;">(belum ada hasil)</pre>
+    </div>
+
+    <div class="card card--pad">
+      <p class="eyebrow" style="margin-bottom:6px;">Log</p>
+      <pre id="log" class="mono" style="font-size:var(--fs-xs); color:var(--text-secondary); white-space:pre-wrap; margin:0;"></pre>
+    </div>
+  </main>
+</div>
+
+<script>
+  function showFatalError(title, detail) {
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    if (banner && text) {
+      banner.style.display = 'block';
+      text.textContent += `${title}\n${detail}\n\n`;
+    }
+    const logEl = document.getElementById('log');
+    if (logEl) logEl.textContent += `[FATAL] ${title}: ${detail}\n`;
+  }
+  window.addEventListener('error', (event) => {
+    showFatalError('window.error', event.message || String(event.error) || 'Unknown error');
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    showFatalError('unhandledrejection', event.reason && event.reason.message ? event.reason.message : String(event.reason));
+  });
+</script>
+
+<script type="module">
+  const container = document.getElementById('preview-container');
+  const placeholder = document.getElementById('preview-placeholder');
+  const activeProfileLabel = document.getElementById('active-profile-label');
+  const sessionStatusEl = document.getElementById('session-status');
+  const sessionBadgeEl = document.getElementById('session-badge');
+  const resultSummaryEl = document.getElementById('result-summary');
+  const logEl = document.getElementById('log');
+
+  function log(message) {
+    const time = new Date().toLocaleTimeString('id-ID');
+    logEl.textContent += `[${time}] ${message}\n`;
+  }
+  function fatal(title, err) {
+    const detail = (err && err.message) ? err.message : String(err);
+    const banner = document.getElementById('error-banner');
+    const text = document.getElementById('error-banner-text');
+    banner.style.display = 'block';
+    text.textContent += `${title}\n${detail}\n\n`;
+    log(`[FATAL] ${title}: ${detail}`);
+  }
+
+  log('Memuat module...');
+  let cameraManager, calibrationProfileManager, calibrationEngine;
+  try {
+    [cameraManager, calibrationProfileManager, calibrationEngine] = await Promise.all([
+      import('../js/core/cameraManager.js'),
+      import('../js/core/calibrationProfileManager.js'),
+      import('../js/core/calibrationEngine.js'),
+    ]);
+    log('Module berhasil dimuat.');
+  } catch (err) {
+    fatal('Gagal memuat module', err);
+    throw err;
+  }
+
+  const { openCamera, closeCamera } = cameraManager;
+  const { createProfile, selectActiveProfile, getActiveProfile } = calibrationProfileManager;
+  const {
+    startCalibration, cancelCalibration, computeCalibration, saveCalibrationResult,
+    onSessionStateChange, getSessionState,
+  } = calibrationEngine;
+
+  const SESSION_BADGE_CLASS = {
+    idle: 'badge--neutral', awaiting_point_a: 'badge--warn', awaiting_point_b: 'badge--warn',
+    ready: 'badge--ok', error: 'badge--danger',
+  };
+  const SESSION_LABEL = {
+    idle: 'idle', awaiting_point_a: 'Tap titik A pada preview', awaiting_point_b: 'Tap titik B pada preview',
+    ready: 'Siap dihitung (2 titik terpilih)', error: 'error',
+  };
+
+  onSessionStateChange((state) => {
+    sessionStatusEl.textContent = SESSION_LABEL[state.status] || state.status;
+    sessionBadgeEl.textContent = state.status.toUpperCase();
+    sessionBadgeEl.className = 'badge ' + (SESSION_BADGE_CLASS[state.status] || 'badge--neutral');
+    log(`session → ${state.status}`);
+  });
+  sessionStatusEl.textContent = SESSION_LABEL[getSessionState().status];
+
+  function refreshActiveProfileLabel() {
+    const profile = getActiveProfile();
+    activeProfileLabel.textContent = profile ? `${profile.profileName} (${profile.id})` : '(belum ada)';
+  }
+
+  document.getElementById('btn-open').addEventListener('click', async () => {
+    log('Membuka kamera...');
+    try {
+      const result = await openCamera(container);
+      if (!result.success) log(`Gagal: [${result.error.code}] ${result.error.message}`);
+    } catch (err) { fatal('Error openCamera()', err); }
+  });
+
+  document.getElementById('btn-close').addEventListener('click', () => {
+    closeCamera();
+    placeholder.textContent = 'Preview belum aktif';
+    placeholder.style.display = 'block';
+  });
+
+  document.getElementById('btn-create-profile').addEventListener('click', async () => {
+    try {
+      const n = Math.floor(Math.random() * 1000);
+      const profile = await createProfile({ profileName: `Profil Test #${n}`, referenceLength: 25, referenceUnit: 'mm' });
+      await selectActiveProfile(profile.id);
+      refreshActiveProfileLabel();
+      log(`Profil dibuat & dipilih aktif: ${profile.id}`);
+    } catch (err) { fatal('Error createProfile()/selectActiveProfile()', err); }
+  });
+
+  document.getElementById('btn-start').addEventListener('click', () => {
+    try {
+      startCalibration();
+      log('Kalibrasi dimulai — tap titik A lalu titik B di preview.');
+    } catch (err) { fatal('Error startCalibration()', err); }
+  });
+
+  document.getElementById('btn-cancel').addEventListener('click', () => {
+    cancelCalibration();
+    log('Kalibrasi dibatalkan.');
+  });
+
+  document.getElementById('btn-compute').addEventListener('click', () => {
+    try {
+      const referenceLength = document.getElementById('ref-length').value;
+      const referenceUnit = document.getElementById('ref-unit').value;
+      const result = computeCalibration({ referenceLength, referenceUnit });
+      resultSummaryEl.textContent =
+        `pixelPerUnit: ${result.pixelPerUnit.toFixed(3)} px/${result.referenceUnit}\n` +
+        `pixelDistance: ${result.pixelDistance.toFixed(1)} px\n` +
+        `referenceLength: ${result.referenceLength} ${result.referenceUnit}\n` +
+        `calibrationQuality: ${result.calibrationQuality}\n` +
+        `timestamp: ${result.timestamp}`;
+      log('Kalibrasi dihitung.');
+    } catch (err) { fatal('Error computeCalibration()', err); }
+  });
+
+  document.getElementById('btn-save').addEventListener('click', async () => {
+    try {
+      const updated = await saveCalibrationResult({ notes: 'Disimpan dari halaman test Sprint 14.' });
+      log(`Hasil tersimpan ke profil "${updated.profileName}" (pixelPerUnit: ${updated.pixelPerUnit}).`);
+      refreshActiveProfileLabel();
+    } catch (err) { fatal('Error saveCalibrationResult()', err); }
+  });
+
+  refreshActiveProfileLabel();
+</script>
+</body>
+</html>
