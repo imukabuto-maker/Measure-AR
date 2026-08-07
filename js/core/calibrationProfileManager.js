@@ -229,3 +229,13 @@ export async function restoreLastUsedProfile() {
   setCalibrationProfileState({ activeProfileId: lastId });
   return profile;
 }
+
+/**
+ * Batalkan pilihan profil aktif (tanpa menghapus profilnya dari
+ * database) — juga menghapus catatan "terakhir dipakai" supaya
+ * restoreLastUsedProfile() tidak memilihnya lagi secara otomatis.
+ */
+export async function clearActiveProfile() {
+  setCalibrationProfileState({ activeProfileId: null });
+  await calibrationProfileRepository.setLastUsedProfileId(null);
+}

@@ -101,7 +101,7 @@
 
   const {
     listProfiles, createProfile, editProfile, deleteProfile, duplicateProfile,
-    selectActiveProfile, restoreLastUsedProfile,
+    selectActiveProfile, restoreLastUsedProfile, clearActiveProfile,
     onCalibrationProfileStateChange, getCalibrationProfileState,
   } = calibrationProfileManager;
 
@@ -192,9 +192,13 @@
     }
   });
 
-  document.getElementById('btn-clear-active').addEventListener('click', () => {
-    const state = getCalibrationProfileState();
-    log(`Profil aktif saat ini: ${state.activeProfileId ?? '(tidak ada)'}`);
+  document.getElementById('btn-clear-active').addEventListener('click', async () => {
+    try {
+      await clearActiveProfile();
+      log('Profil aktif dibatalkan.');
+    } catch (err) {
+      fatal('Error clearActiveProfile()', err);
+    }
   });
 
   // Muat daftar saat halaman pertama dibuka
