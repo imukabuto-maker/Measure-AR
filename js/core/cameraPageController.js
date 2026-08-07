@@ -44,6 +44,7 @@ const SESSION_BADGE_CLASS = {
 
 let wired = false;
 let unsubscribers = [];
+let outsideClickHandler = null;
 
 /** Cek apakah halaman Camera sedang tampil, pasang/lepas wiring sesuai kondisi. */
 function evaluatePage() {
@@ -57,6 +58,38 @@ function evaluatePage() {
 
 /** Pasang seluruh wiring Camera Core ke elemen-elemen halaman Camera. */
 function wireCameraPage(container) {
+  // ---- Menu dropdown (kanan-atas): toggle buka/tutup + tutup otomatis ----
+  const menuToggle = document.getElementById('cam-menu-toggle');
+  const menuPanel = document.getElementById('cam-menu-panel');
+
+  function closeMenu() {
+    menuPanel?.setAttribute('hidden', '');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+  }
+  function toggleMenu() {
+    const isOpen = !menuPanel?.hasAttribute('hidden');
+    if (isOpen) {
+      closeMenu();
+    } else {
+      menuPanel?.removeAttribute('hidden');
+      menuToggle?.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  menuToggle?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    toggleMenu();
+  });
+  outsideClickHandler = (event) => {
+    if (!event.target.closest('.cam-menu')) closeMenu();
+  };
+  document.addEventListener('click', outsideClickHandler);
+  // Tutup menu otomatis setelah item non-toggle ditekan (kecuali switch,
+  // supaya user bisa nyalakan beberapa overlay sekaligus tanpa buka-tutup berulang).
+  menuPanel?.querySelectorAll('.cam-menu__item:not([role="switch"])').forEach((item) => {
+    item.addEventListener('click', () => closeMenu());
+  });
+
   wired = true;
 
   const errorBanner = document.getElementById('camera-error-banner');
@@ -195,6 +228,10 @@ function unwireCameraPage() {
   wired = false;
   unsubscribers.forEach((unsubscribe) => unsubscribe());
   unsubscribers = [];
+  if (outsideClickHandler) {
+    document.removeEventListener('click', outsideClickHandler);
+    outsideClickHandler = null;
+  }
   stopCameraLifecycle();
 }
 
