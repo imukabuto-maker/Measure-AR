@@ -21,7 +21,34 @@
       <a class="icon-btn" href="setting.html" aria-label="Setting">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l1.8-1.4-2-3.4-2.1.6a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.5 2.3a7.6 7.6 0 0 0-2.6 1.5l-2.1-.6-2 3.4L4.6 10.5a7.6 7.6 0 0 0 0 3L2.8 15l2 3.4 2.1-.6a7.6 7.6 0 0 0 2.6 1.5l.5 2.3h4l.5-2.3a7.6 7.6 0 0 0 2.6-1.5l2.1.6 2-3.4z"/></svg>
       </a>
-    </div>
+          <div class="nav-menu">
+        <button class="icon-btn nav-menu__trigger" id="nav-menu-toggle" aria-label="Menu navigasi" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="nav-menu__panel" id="nav-menu-panel" hidden>
+          <a class="nav-menu__item" href="home.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5a1 1 0 0 0 1 1h3.5v-6h5v6H18a1 1 0 0 0 1-1V10"/></svg>
+            Home
+          </a>
+          <a class="nav-menu__item" href="camera.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1-2h7l1 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.25"/></svg>
+            Camera
+          </a>
+          <a class="nav-menu__item" href="calibration.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            Calibration
+          </a>
+          <a class="nav-menu__item" href="measurement.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="7" rx="1"/><path d="M7 8.5v3M11 8.5v3M15 8.5v3M19 8.5v3"/></svg>
+            Measurement
+          </a>
+          <a class="nav-menu__item" href="history.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+            History
+          </a>
+        </div>
+      </div>
+</div>
   </header>
 
   <main class="screen">
@@ -87,33 +114,11 @@
     </div>
   </main>
 
-  <nav class="bottom-nav" aria-label="Primary">
-    <a class="bottom-nav__item" href="home.html" aria-current="page">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5a1 1 0 0 0 1 1h3.5v-6h5v6H18a1 1 0 0 0 1-1V10"/></svg>
-      <span>Home</span>
-    </a>
-    <a class="bottom-nav__item" href="camera.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1-2h7l1 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.25"/></svg>
-      <span>Camera</span>
-    </a>
-    <a class="bottom-nav__item" href="calibration.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-      <span>Calib.</span>
-    </a>
-    <a class="bottom-nav__item" href="measurement.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8.5" width="18" height="7" rx="1"/><path d="M7 8.5v3M11 8.5v3M15 8.5v3M19 8.5v3"/></svg>
-      <span>Measure</span>
-    </a>
-    <a class="bottom-nav__item" href="history.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
-      <span>History</span>
-    </a>
-  </nav>
-
 </div>
 <script type="module" src="js/core/router.js"></script>
 <script type="module" src="js/core/cameraPageController.js"></script>
 <script type="module" src="js/core/projectPageController.js"></script>
 <script type="module" src="js/core/calibrationPageController.js"></script>
+<script type="module" src="js/core/navMenuController.js"></script>
 </body>
 </html>

@@ -31,7 +31,7 @@
 }
 .topbar__actions { display: flex; align-items: center; gap: var(--sp-1); }
 .icon-btn {
-  width: 30px; height: 30px;
+  width: 40px; height: 40px;
   display: grid; place-items: center;
   background: transparent;
   border: 1px solid transparent;
@@ -327,7 +327,33 @@
   color: var(--accent);
 }
 
-/* ---------- Bottom navigation ---------- */
+/* ---------- Nav menu (dropdown navigasi — pengganti bottom-nav tetap) ---------- */
+.nav-menu { position: relative; }
+.nav-menu__panel {
+  position: absolute; top: 46px; right: 0;
+  min-width: 180px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+  padding: var(--sp-2);
+  display: flex; flex-direction: column; gap: 2px;
+  z-index: 100;
+}
+.nav-menu__item {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+.nav-menu__item svg { width: 18px; height: 18px; stroke: var(--text-secondary); flex-shrink: 0; }
+.nav-menu__item:active { background: var(--bg-panel-raised); }
+.nav-menu__item[aria-current="page"] { color: var(--accent); }
+.nav-menu__item[aria-current="page"] svg { stroke: var(--accent); }
+
+/* ---------- Bottom nav (LEGACY — tidak lagi dirender, dibiarkan agar
+   tidak menghapus definisi jika ada referensi lama) ---------- */
 .bottom-nav {
   position: fixed;
   left: 50%;

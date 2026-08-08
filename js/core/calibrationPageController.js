@@ -116,13 +116,13 @@ function wireCalibrationPage(container) {
     }
   });
 
-  // ---- Tipe Referensi: pilih di dropdown → guide berubah bentuk +
+  // ---- Tipe Referensi: rail ikon SELALU terlihat → guide berubah bentuk +
   //      auto-isi panjang referensi (bantu presisi memposisikan) ----
-  document.querySelectorAll('.ref-type-item').forEach((item) => {
+  document.querySelectorAll('.ref-type-icon').forEach((item) => {
     item.addEventListener('click', () => {
       const type = item.dataset.type;
 
-      document.querySelectorAll('.ref-type-item').forEach((el) => el.setAttribute('aria-checked', el === item ? 'true' : 'false'));
+      document.querySelectorAll('.ref-type-icon').forEach((el) => el.setAttribute('aria-checked', el === item ? 'true' : 'false'));
 
       referenceGuide.classList.remove('reference-guide--coin', 'reference-guide--idcard', 'reference-guide--marker');
       if (type === 'coin') {
@@ -142,7 +142,6 @@ function wireCalibrationPage(container) {
         refLengthInput.value = item.dataset.length;
         refUnitSelect.value = item.dataset.unit || 'mm';
       }
-      closeMenu();
     });
   });
 

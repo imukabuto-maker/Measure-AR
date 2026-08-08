@@ -71,7 +71,7 @@ img, svg { display: block; max-width: 100%; }
 
 .screen {
   flex: 1;
-  padding: var(--sp-5) var(--sp-4) calc(var(--bar-height) + var(--sp-8));
+  padding: var(--sp-5) var(--sp-4) var(--sp-8);
 }
 
 .screen__header {
